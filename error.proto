@@ -1,0 +1,13 @@
+syntax = "proto2";
+
+package tipb;
+
+enum ErrorCode {
+	UnkownError = 0;
+	// TODO: add more error codes.
+}
+
+message Error {
+	optional ErrorCode code = 1;
+	optional string err_msg = 2;
+}

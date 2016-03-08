@@ -1,0 +1,76 @@
+syntax = "proto2";
+
+package tipb;
+
+import "expression.proto";
+import "schema.proto";
+import "error.proto";
+
+// KeyRange specifies the range of key to be scanned.
+// low is closed, high is open ( low <= value < high )
+// It can be table handle or index value, it's not the encoded key in the kv store.
+message KeyRange {
+	optional bytes low = 1;
+	optional bytes high = 2;
+}
+
+// KeyPoint represents a single key.
+message KeyPoint {
+	optional bytes key = 1;
+}
+
+// SelectRequest works like a simplified select statement.
+message SelectRequest {
+	// transaction start timestamp.
+	optional int64 start_ts = 1;
+
+	// If table_info is not null, it represents a table scan, index_info would be null.
+	optional TableInfo table_info = 2;
+
+	// If IndexInfo is not null, table_info would be null.
+	optional IndexInfo index_info = 3;
+
+	// fields to be selected, fields type can be column reference for simple scan.
+	// or aggregation function.
+	repeated Expression fields = 4;
+
+	// disjoint key ranges to be scanned.
+	repeated KeyRange ranges = 5;
+
+	// key points to be looked up.
+	repeated KeyPoint points = 6;
+
+	// where condition.
+	optional Expression where = 7;
+
+	// group by clause.
+	optional Expression group_by = 8;
+
+	// scan_limit should be greater than or equal to result_limit;
+	optional int64 scan_limit = 9;
+	optional int64 result_limit = 10;
+}
+
+// Row packs all column values into a single byte slice.
+// With lengths to separate them.
+// values are all in text format.
+message Row {
+	repeated int32 lengths = 1;
+	optional bytes values = 2;
+}
+
+// Response for SelectRequest.
+message SelectResponse {
+	optional Error error = 1;
+
+	// Ranges the region server does not have.
+	repeated KeyRange missing_ranges = 2;
+
+	// Result rows.
+	repeated Row rows = 3;
+
+	// If the requested key range has not finished scanning.
+	// next_key can be used to compose the range for the following request.
+	// null means there is no more data to scan.
+	optional bytes next_key = 4;
+}
