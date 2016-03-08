@@ -2,6 +2,10 @@ syntax = "proto2";
 
 package tipb;
 
+option java_multiple_files = true;
+option java_package = "com.pingcap.tidb.tipb";
+option java_outer_classname = "SelectProto";
+
 enum ExpressionType {
 	// children count 0.
 	// values are in text format.
