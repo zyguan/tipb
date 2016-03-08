@@ -55,12 +55,9 @@ message SelectRequest {
 	optional int64 result_limit = 10;
 }
 
-// Row packs all column values into a single byte slice.
-// With lengths to separate them.
 // values are all in text format.
 message Row {
-	repeated int32 lengths = 1;
-	optional bytes values = 2;
+	repeated bytes values = 1;
 }
 
 // Response for SelectRequest.
