@@ -60,6 +60,7 @@ message ColumnInfo {
 	optional int32 columnLen = 4;
 	optional int32 decimal = 5;
 	optional bool pk_handle = 6; // PK handle column value is row handle.
+	repeated string elems = 7;
 }
 
 message IndexInfo {
