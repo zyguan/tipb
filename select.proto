@@ -8,13 +8,17 @@ option java_outer_classname = "SelectProto";
 
 import "expression.proto";
 import "schema.proto";
-import "error.proto";
 
-// HandleRange specifies the range of handle to be scanned.
-// low is closed, high is open ( low <= value < high ).
-message HandleRange {
-	optional int64 low = 1;
-	optional int64 high = 2;
+// KeyRange is the encoded index key ranges, low is closed, high is open. (low <= x < high)
+message KeyRange {
+	optional bytes low = 1;
+	optional bytes high = 2;
+}
+
+// ByItem type for group by and order by.
+message ByItem {
+	optional Expr expr = 1;
+	optional bool desc = 2;
 }
 
 // SelectRequest works like a simplified select statement.
@@ -25,30 +29,47 @@ message SelectRequest {
 	// If table_info is not null, it represents a table scan, index_info would be null.
 	optional TableInfo table_info = 2;
 
+	// If IndexInfo is not null, it represents a index scan, table_info would be null.
+	optional IndexInfo index_info = 3;
+
 	// fields to be selected, fields type can be column reference for simple scan.
-	// or aggregation function.
-	repeated Expression fields = 3;
+	// or aggregation function. If no fields specified, only handle will be returned.
+	repeated Expr fields = 4;
 
 	// disjoint handle ranges to be scanned.
-	repeated HandleRange ranges = 4;
+	repeated KeyRange ranges = 5;
 
 	// handle points to be looked up.
-	repeated int64 points = 5;
+	repeated bytes points = 6;
+
+	// distinct result.
+	optional bool distinct = 7;
 
 	// where condition.
-	optional Expression where = 6;
+	optional Expr where = 8;
 
 	// group by clause.
-	optional Expression group_by = 7;
+	repeated ByItem group_by = 9;
 
-	// scan_limit should be greater than or equal to result_limit;
-	optional int64 scan_limit = 8;
-	optional int64 result_limit = 9;
+	// having clause.
+	optional Expr having = 10;
+
+	// order by clause.
+	repeated ByItem order_by = 11;
+
+	// limit the result to be returned;
+	optional int64 limit = 12;
 }
 
 // values are all in text format.
 message Row {
-	repeated bytes values = 1;
+	optional bytes handle = 1;
+	optional bytes data = 2;
+}
+
+message Error {
+	optional int32 code = 1;
+	optional string msg = 2;
 }
 
 // Response for SelectRequest.
@@ -61,32 +82,5 @@ message SelectResponse {
 	// If the requested key range has not finished scanning.
 	// next_handle can be used to compose the range for the following request.
 	// null means there is no more data to scan.
-	optional int64 next_handle = 4;
-}
-
-// KeyRange is the encoded index key ranges.
-message KeyRange {
-	optional bytes low = 1;
-	optional bytes high = 2;
-}
-
-message IndexRequest {
-	// transaction start timestamp.
-	optional int64 start_ts = 1;
-
-	// If IndexInfo is not null, table_info would be null.
-	optional IndexInfo index_info = 2;
-
-	repeated KeyRange ranges = 3;
-
-	repeated bytes points = 4;
-
-	optional int64 limit = 5;
-}
-
-// IndexResponse is the
-message IndexResponse {
-	optional Error error = 1;
-	repeated int64 handles = 2;
-	optional bytes next_key = 3;
+	optional bytes next_handle = 4;
 }
