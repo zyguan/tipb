@@ -4,12 +4,11 @@ package tipb;
 
 option java_multiple_files = true;
 option java_package = "com.pingcap.tidb.tipb";
-option java_outer_classname = "SelectProto";
 
 import "expression.proto";
 import "schema.proto";
 
-// KeyRange is the encoded index key ranges, low is closed, high is open. (low <= x < high)
+// KeyRange is the encoded index key range, low is closed, high is open. (low <= x < high)
 message KeyRange {
 	optional bytes low = 1;
 	optional bytes high = 2;
@@ -29,7 +28,7 @@ message SelectRequest {
 	// If table_info is not null, it represents a table scan, index_info would be null.
 	optional TableInfo table_info = 2;
 
-	// If IndexInfo is not null, it represents a index scan, table_info would be null.
+	// If index_info is not null, it represents an index scan, table_info would be null.
 	optional IndexInfo index_info = 3;
 
 	// fields to be selected, fields type can be column reference for simple scan.
@@ -39,25 +38,22 @@ message SelectRequest {
 	// disjoint handle ranges to be scanned.
 	repeated KeyRange ranges = 5;
 
-	// handle points to be looked up.
-	repeated bytes points = 6;
-
 	// distinct result.
-	optional bool distinct = 7;
+	optional bool distinct = 6;
 
 	// where condition.
-	optional Expr where = 8;
+	optional Expr where = 7;
 
 	// group by clause.
-	repeated ByItem group_by = 9;
+	repeated ByItem group_by = 8;
 
 	// having clause.
-	optional Expr having = 10;
+	optional Expr having = 9;
 
 	// order by clause.
-	repeated ByItem order_by = 11;
+	repeated ByItem order_by = 10;
 
-	// limit the result to be returned;
+	// limit the result to be returned.
 	optional int64 limit = 12;
 }
 
@@ -77,10 +73,5 @@ message SelectResponse {
 	optional Error error = 1;
 
 	// Result rows.
-	repeated Row rows = 3;
-
-	// If the requested key range has not finished scanning.
-	// next_handle can be used to compose the range for the following request.
-	// null means there is no more data to scan.
-	optional bytes next_handle = 4;
+	repeated Row rows = 2;
 }

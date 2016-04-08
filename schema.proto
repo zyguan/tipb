@@ -4,7 +4,6 @@ package tipb;
 
 option java_multiple_files = true;
 option java_package = "com.pingcap.tidb.tipb";
-option java_outer_classname = "SelectProto";
 
 message TableInfo {
 	optional int64 table_id = 1;
