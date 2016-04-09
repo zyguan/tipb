@@ -23,7 +23,7 @@ message ByItem {
 // SelectRequest works like a simplified select statement.
 message SelectRequest {
 	// transaction start timestamp.
-	optional int64 start_ts = 1;
+	optional uint64 start_ts = 1;
 
 	// If table_info is not null, it represents a table scan, index_info would be null.
 	optional TableInfo table_info = 2;

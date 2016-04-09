@@ -1,10 +1,6 @@
 // This file is generated. Do not edit
 // @generated
 
-// https://github.com/Manishearth/rust-clippy/issues/702
-#![allow(unknown_lints)]
-#![allow(clippy)]
-
 #![allow(dead_code)]
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
@@ -175,11 +171,11 @@ impl ::protobuf::Message for KeyRange {
         self.cached_size.get()
     }
 
-    fn get_unknown_fields(&self) -> &::protobuf::UnknownFields {
+    fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
         &self.unknown_fields
     }
 
-    fn mut_unknown_fields(&mut self) -> &mut ::protobuf::UnknownFields {
+    fn mut_unknown_fields<'s>(&'s mut self) -> &'s mut ::protobuf::UnknownFields {
         &mut self.unknown_fields
     }
 
@@ -399,11 +395,11 @@ impl ::protobuf::Message for ByItem {
         self.cached_size.get()
     }
 
-    fn get_unknown_fields(&self) -> &::protobuf::UnknownFields {
+    fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
         &self.unknown_fields
     }
 
-    fn mut_unknown_fields(&mut self) -> &mut ::protobuf::UnknownFields {
+    fn mut_unknown_fields<'s>(&'s mut self) -> &'s mut ::protobuf::UnknownFields {
         &mut self.unknown_fields
     }
 
@@ -478,7 +474,7 @@ impl ::std::fmt::Debug for ByItem {
 #[derive(Clone,Default)]
 pub struct SelectRequest {
     // message fields
-    start_ts: ::std::option::Option<i64>,
+    start_ts: ::std::option::Option<u64>,
     table_info: ::protobuf::SingularPtrField<super::schema::TableInfo>,
     index_info: ::protobuf::SingularPtrField<super::schema::IndexInfo>,
     fields: ::protobuf::RepeatedField<super::expression::Expr>,
@@ -528,7 +524,7 @@ impl SelectRequest {
         }
     }
 
-    // optional int64 start_ts = 1;
+    // optional uint64 start_ts = 1;
 
     pub fn clear_start_ts(&mut self) {
         self.start_ts = ::std::option::Option::None;
@@ -539,11 +535,11 @@ impl SelectRequest {
     }
 
     // Param is passed by value, moved
-    pub fn set_start_ts(&mut self, v: i64) {
+    pub fn set_start_ts(&mut self, v: u64) {
         self.start_ts = ::std::option::Option::Some(v);
     }
 
-    pub fn get_start_ts<'a>(&self) -> i64 {
+    pub fn get_start_ts<'a>(&self) -> u64 {
         self.start_ts.unwrap_or(0)
     }
 
@@ -831,7 +827,7 @@ impl ::protobuf::Message for SelectRequest {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
                         return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
                     };
-                    let tmp = try!(is.read_int64());
+                    let tmp = try!(is.read_uint64());
                     self.start_ts = ::std::option::Option::Some(tmp);
                 },
                 2 => {
@@ -932,7 +928,7 @@ impl ::protobuf::Message for SelectRequest {
 
     fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
         if let Some(v) = self.start_ts {
-            try!(os.write_int64(1, v));
+            try!(os.write_uint64(1, v));
         };
         if let Some(v) = self.table_info.as_ref() {
             try!(os.write_tag(2, ::protobuf::wire_format::WireTypeLengthDelimited));
@@ -988,11 +984,11 @@ impl ::protobuf::Message for SelectRequest {
         self.cached_size.get()
     }
 
-    fn get_unknown_fields(&self) -> &::protobuf::UnknownFields {
+    fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
         &self.unknown_fields
     }
 
-    fn mut_unknown_fields(&mut self) -> &mut ::protobuf::UnknownFields {
+    fn mut_unknown_fields<'s>(&'s mut self) -> &'s mut ::protobuf::UnknownFields {
         &mut self.unknown_fields
     }
 
@@ -1022,7 +1018,7 @@ impl ::protobuf::MessageStatic for SelectRequest {
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_singular_i64_accessor(
+                fields.push(::protobuf::reflect::accessor::make_singular_u64_accessor(
                     "start_ts",
                     SelectRequest::has_start_ts,
                     SelectRequest::get_start_ts,
@@ -1284,11 +1280,11 @@ impl ::protobuf::Message for Row {
         self.cached_size.get()
     }
 
-    fn get_unknown_fields(&self) -> &::protobuf::UnknownFields {
+    fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
         &self.unknown_fields
     }
 
-    fn mut_unknown_fields(&mut self) -> &mut ::protobuf::UnknownFields {
+    fn mut_unknown_fields<'s>(&'s mut self) -> &'s mut ::protobuf::UnknownFields {
         &mut self.unknown_fields
     }
 
@@ -1508,11 +1504,11 @@ impl ::protobuf::Message for Error {
         self.cached_size.get()
     }
 
-    fn get_unknown_fields(&self) -> &::protobuf::UnknownFields {
+    fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
         &self.unknown_fields
     }
 
-    fn mut_unknown_fields(&mut self) -> &mut ::protobuf::UnknownFields {
+    fn mut_unknown_fields<'s>(&'s mut self) -> &'s mut ::protobuf::UnknownFields {
         &mut self.unknown_fields
     }
 
@@ -1737,11 +1733,11 @@ impl ::protobuf::Message for SelectResponse {
         self.cached_size.get()
     }
 
-    fn get_unknown_fields(&self) -> &::protobuf::UnknownFields {
+    fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
         &self.unknown_fields
     }
 
-    fn mut_unknown_fields(&mut self) -> &mut ::protobuf::UnknownFields {
+    fn mut_unknown_fields<'s>(&'s mut self) -> &'s mut ::protobuf::UnknownFields {
         &mut self.unknown_fields
     }
 
@@ -1824,7 +1820,7 @@ static file_descriptor_proto_data: &'static [u8] = &[
     0x0c, 0x0a, 0x04, 0x64, 0x65, 0x73, 0x63, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x22, 0xbf, 0x02,
     0x0a, 0x0d, 0x53, 0x65, 0x6c, 0x65, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
     0x10, 0x0a, 0x08, 0x73, 0x74, 0x61, 0x72, 0x74, 0x5f, 0x74, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28,
-    0x03, 0x12, 0x23, 0x0a, 0x0a, 0x74, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x18,
+    0x04, 0x12, 0x23, 0x0a, 0x0a, 0x74, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x18,
     0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x74, 0x69, 0x70, 0x62, 0x2e, 0x54, 0x61, 0x62,
     0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x23, 0x0a, 0x0a, 0x69, 0x6e, 0x64, 0x65, 0x78, 0x5f,
     0x69, 0x6e, 0x66, 0x6f, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x74, 0x69, 0x70,
@@ -1900,12 +1896,12 @@ static file_descriptor_proto_data: &'static [u8] = &[
     0x6c, 0x69, 0x66, 0x69, 0x65, 0x64, 0x20, 0x73, 0x65, 0x6c, 0x65, 0x63, 0x74, 0x20, 0x73, 0x74,
     0x61, 0x74, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x2e, 0x0a, 0x0a, 0x0a, 0x0a, 0x03, 0x04, 0x02, 0x01,
     0x12, 0x03, 0x17, 0x08, 0x15, 0x0a, 0x2b, 0x0a, 0x04, 0x04, 0x02, 0x02, 0x00, 0x12, 0x03, 0x19,
-    0x08, 0x24, 0x1a, 0x1e, 0x20, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e,
+    0x08, 0x25, 0x1a, 0x1e, 0x20, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e,
     0x20, 0x73, 0x74, 0x61, 0x72, 0x74, 0x20, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
     0x2e, 0x0a, 0x0a, 0x0c, 0x0a, 0x05, 0x04, 0x02, 0x02, 0x00, 0x04, 0x12, 0x03, 0x19, 0x08, 0x10,
-    0x0a, 0x0c, 0x0a, 0x05, 0x04, 0x02, 0x02, 0x00, 0x05, 0x12, 0x03, 0x19, 0x11, 0x16, 0x0a, 0x0c,
-    0x0a, 0x05, 0x04, 0x02, 0x02, 0x00, 0x01, 0x12, 0x03, 0x19, 0x17, 0x1f, 0x0a, 0x0c, 0x0a, 0x05,
-    0x04, 0x02, 0x02, 0x00, 0x03, 0x12, 0x03, 0x19, 0x22, 0x23, 0x0a, 0x5f, 0x0a, 0x04, 0x04, 0x02,
+    0x0a, 0x0c, 0x0a, 0x05, 0x04, 0x02, 0x02, 0x00, 0x05, 0x12, 0x03, 0x19, 0x11, 0x17, 0x0a, 0x0c,
+    0x0a, 0x05, 0x04, 0x02, 0x02, 0x00, 0x01, 0x12, 0x03, 0x19, 0x18, 0x20, 0x0a, 0x0c, 0x0a, 0x05,
+    0x04, 0x02, 0x02, 0x00, 0x03, 0x12, 0x03, 0x19, 0x23, 0x24, 0x0a, 0x5f, 0x0a, 0x04, 0x04, 0x02,
     0x02, 0x01, 0x12, 0x03, 0x1c, 0x08, 0x2a, 0x1a, 0x52, 0x20, 0x49, 0x66, 0x20, 0x74, 0x61, 0x62,
     0x6c, 0x65, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x20, 0x69, 0x73, 0x20, 0x6e, 0x6f, 0x74, 0x20, 0x6e,
     0x75, 0x6c, 0x6c, 0x2c, 0x20, 0x69, 0x74, 0x20, 0x72, 0x65, 0x70, 0x72, 0x65, 0x73, 0x65, 0x6e,
