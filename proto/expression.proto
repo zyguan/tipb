@@ -25,6 +25,9 @@ enum ExprType {
 	MysqlSet = 106;
 	MysqlTime = 107;
 
+	// Encoded value list.
+	ValueList = 151;
+
 	// Column reference. value is int64 column ID.
 	ColumnRef = 201;
 
