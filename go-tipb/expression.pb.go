@@ -24,10 +24,13 @@
 */
 package tipb
 
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
+import (
+	"fmt"
+
+	proto "github.com/golang/protobuf/proto"
+)
+
 import math "math"
-import _ "gogoproto"
 
 import io "io"
 
