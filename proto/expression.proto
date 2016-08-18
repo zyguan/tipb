@@ -151,7 +151,7 @@ enum ExprType {
 
 // Evaluators should implement evaluation functions for every expression type.
 message Expr {
-	optional ExprType tp = 1 [(gogoproto.nullable) = false];
+	optional ExprType tp = 1;
 	optional bytes val = 2;
-	repeated Expr children = 3 [(gogoproto.nullable) = false];
+	repeated Expr children = 3;
 }
