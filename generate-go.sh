@@ -1,4 +1,5 @@
 cd proto
 
 echo "generate go code..."
-protoc -I.:${GOPATH}/src/github.com/gogo/protobuf:${GOPATH}/src/github.com/gogo/protobuf/protobuf --gofast_out=../go-tipb *.proto
+GOGO_ROOT=${GOPATH}/src/github.com/gogo/protobuf
+protoc -I.:${GOGO_ROOT}:${GOGO_ROOT}/protobuf --gofast_out=../go-tipb *.proto
