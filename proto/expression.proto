@@ -5,6 +5,15 @@ package tipb;
 option java_multiple_files = true;
 option java_package = "com.pingcap.tidb.tipb";
 
+import "gogoproto/gogo.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.goproto_getters_all) = false;
+option (gogoproto.goproto_enum_prefix_all) = false;
+
+
 enum ExprType {
 	/* Children count 0. */
 	// Values are encoded bytes.
@@ -144,7 +153,7 @@ enum ExprType {
 
 // Evaluators should implement evaluation functions for every expression type.
 message Expr {
-	optional ExprType tp = 1;
+	optional ExprType tp = 1 [(gogoproto.nullable) = false];
 	optional bytes val = 2;
-	repeated Expr children = 3;
+	repeated Expr children = 3 [(gogoproto.nullable) = false];
 }

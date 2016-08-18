@@ -2,7 +2,8 @@ cd proto
 
 echo "generate rust code..."
 ret=0
-protoc --rust_out ../src *.proto || ret=$?
+protoc -I.:${GOPATH}/src/github.com/gogo/protobuf:${GOPATH}/src/github.com/gogo/protobuf/protobuf --rust_out ../src *.proto || ret=$?
+
 
 echo "extern crate protobuf;" > ../src/lib.rs
 for file in `ls *.proto`
