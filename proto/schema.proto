@@ -10,8 +10,6 @@ import "gogoproto/gogo.proto";
 option (gogoproto.marshaler_all) = true;
 option (gogoproto.sizer_all) = true;
 option (gogoproto.unmarshaler_all) = true;
-option (gogoproto.goproto_getters_all) = false;
-option (gogoproto.goproto_enum_prefix_all) = false;
 
 message TableInfo {
 	optional int64 table_id = 1 [(gogoproto.nullable) = false];
