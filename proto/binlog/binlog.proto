@@ -1,0 +1,30 @@
+syntax = "proto2";
+
+package binlog;
+
+import "gogoproto/gogo.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+
+// TableMutation contains mutations in a table.
+message TableMutation {
+    optional int64 tableID = 1 [(gogoproto.nullable) = false];
+    repeated int64 insertedIDs = 2;
+    repeated int64 updatedIDs  = 3;
+    repeated int64 deletedIDs = 4;
+
+    // For tables with non-interger types primary key.
+    repeated bytes deletedPKs = 5;
+
+    // For tables without primary key.
+    repeated bytes deletedRows = 6;
+}
+
+// Binlog contains all the changes in a transaction, which can be used to reconstruct SQL statement, then export to
+// other systems.
+message Binlog {
+    optional int64 schemaVersion = 1 [(gogoproto.nullable) = false];
+    repeated TableMutation mutations = 2 [(gogoproto.nullable) = false];
+}
