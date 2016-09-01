@@ -37,13 +37,15 @@ const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 // TableMutation contains mutations in a table.
 type TableMutation struct {
-	TableId     int64   `protobuf:"varint,1,opt,name=table_id" json:"table_id"`
-	InsertedIds []int64 `protobuf:"varint,2,rep,name=inserted_ids" json:"inserted_ids,omitempty"`
-	UpdatedIds  []int64 `protobuf:"varint,3,rep,name=updated_ids" json:"updated_ids,omitempty"`
-	DeletedIds  []int64 `protobuf:"varint,4,rep,name=deleted_ids" json:"deleted_ids,omitempty"`
-	// For tables with non-interger types primary key.
-	DeletedPks [][]byte `protobuf:"bytes,5,rep,name=deleted_pks" json:"deleted_pks,omitempty"`
-	// For tables without primary key.
+	TableId int64 `protobuf:"varint,1,opt,name=table_id" json:"table_id"`
+	// For inserted rows and updated rows, we save all column values of the row.
+	InsertedRows [][]byte `protobuf:"bytes,2,rep,name=inserted_rows" json:"inserted_rows,omitempty"`
+	UpdatedRows  [][]byte `protobuf:"bytes,3,rep,name=updated_rows" json:"updated_rows,omitempty"`
+	// If the table PK is handle, we can only save the id of the deleted row.
+	DeletedIds []int64 `protobuf:"varint,4,rep,name=deleted_ids" json:"deleted_ids,omitempty"`
+	// If the table has PK but PK is not handle, we save the PK of the deleted row.
+	DeletedPks []int64 `protobuf:"varint,5,rep,name=deleted_pks" json:"deleted_pks,omitempty"`
+	// If the table doesn't have PK, we save the row value of the deleted row.
 	DeletedRows      [][]byte `protobuf:"bytes,6,rep,name=deleted_rows" json:"deleted_rows,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
@@ -60,16 +62,16 @@ func (m *TableMutation) GetTableId() int64 {
 	return 0
 }
 
-func (m *TableMutation) GetInsertedIds() []int64 {
+func (m *TableMutation) GetInsertedRows() [][]byte {
 	if m != nil {
-		return m.InsertedIds
+		return m.InsertedRows
 	}
 	return nil
 }
 
-func (m *TableMutation) GetUpdatedIds() []int64 {
+func (m *TableMutation) GetUpdatedRows() [][]byte {
 	if m != nil {
-		return m.UpdatedIds
+		return m.UpdatedRows
 	}
 	return nil
 }
@@ -81,7 +83,7 @@ func (m *TableMutation) GetDeletedIds() []int64 {
 	return nil
 }
 
-func (m *TableMutation) GetDeletedPks() [][]byte {
+func (m *TableMutation) GetDeletedPks() []int64 {
 	if m != nil {
 		return m.DeletedPks
 	}
@@ -144,18 +146,20 @@ func (m *TableMutation) MarshalTo(data []byte) (int, error) {
 	data[i] = 0x8
 	i++
 	i = encodeVarintBinlog(data, i, uint64(m.TableId))
-	if len(m.InsertedIds) > 0 {
-		for _, num := range m.InsertedIds {
-			data[i] = 0x10
+	if len(m.InsertedRows) > 0 {
+		for _, b := range m.InsertedRows {
+			data[i] = 0x12
 			i++
-			i = encodeVarintBinlog(data, i, uint64(num))
+			i = encodeVarintBinlog(data, i, uint64(len(b)))
+			i += copy(data[i:], b)
 		}
 	}
-	if len(m.UpdatedIds) > 0 {
-		for _, num := range m.UpdatedIds {
-			data[i] = 0x18
+	if len(m.UpdatedRows) > 0 {
+		for _, b := range m.UpdatedRows {
+			data[i] = 0x1a
 			i++
-			i = encodeVarintBinlog(data, i, uint64(num))
+			i = encodeVarintBinlog(data, i, uint64(len(b)))
+			i += copy(data[i:], b)
 		}
 	}
 	if len(m.DeletedIds) > 0 {
@@ -166,11 +170,10 @@ func (m *TableMutation) MarshalTo(data []byte) (int, error) {
 		}
 	}
 	if len(m.DeletedPks) > 0 {
-		for _, b := range m.DeletedPks {
-			data[i] = 0x2a
+		for _, num := range m.DeletedPks {
+			data[i] = 0x28
 			i++
-			i = encodeVarintBinlog(data, i, uint64(len(b)))
-			i += copy(data[i:], b)
+			i = encodeVarintBinlog(data, i, uint64(num))
 		}
 	}
 	if len(m.DeletedRows) > 0 {
@@ -254,14 +257,16 @@ func (m *TableMutation) Size() (n int) {
 	var l int
 	_ = l
 	n += 1 + sovBinlog(uint64(m.TableId))
-	if len(m.InsertedIds) > 0 {
-		for _, e := range m.InsertedIds {
-			n += 1 + sovBinlog(uint64(e))
+	if len(m.InsertedRows) > 0 {
+		for _, b := range m.InsertedRows {
+			l = len(b)
+			n += 1 + l + sovBinlog(uint64(l))
 		}
 	}
-	if len(m.UpdatedIds) > 0 {
-		for _, e := range m.UpdatedIds {
-			n += 1 + sovBinlog(uint64(e))
+	if len(m.UpdatedRows) > 0 {
+		for _, b := range m.UpdatedRows {
+			l = len(b)
+			n += 1 + l + sovBinlog(uint64(l))
 		}
 	}
 	if len(m.DeletedIds) > 0 {
@@ -270,9 +275,8 @@ func (m *TableMutation) Size() (n int) {
 		}
 	}
 	if len(m.DeletedPks) > 0 {
-		for _, b := range m.DeletedPks {
-			l = len(b)
-			n += 1 + l + sovBinlog(uint64(l))
+		for _, e := range m.DeletedPks {
+			n += 1 + sovBinlog(uint64(e))
 		}
 	}
 	if len(m.DeletedRows) > 0 {
@@ -365,68 +369,8 @@ func (m *TableMutation) Unmarshal(data []byte) error {
 				}
 			}
 		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field InsertedIds", wireType)
-			}
-			var v int64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowBinlog
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				v |= (int64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.InsertedIds = append(m.InsertedIds, v)
-		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field UpdatedIds", wireType)
-			}
-			var v int64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowBinlog
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				v |= (int64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.UpdatedIds = append(m.UpdatedIds, v)
-		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DeletedIds", wireType)
-			}
-			var v int64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowBinlog
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				v |= (int64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.DeletedIds = append(m.DeletedIds, v)
-		case 5:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DeletedPks", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field InsertedRows", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -450,9 +394,78 @@ func (m *TableMutation) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.DeletedPks = append(m.DeletedPks, make([]byte, postIndex-iNdEx))
-			copy(m.DeletedPks[len(m.DeletedPks)-1], data[iNdEx:postIndex])
+			m.InsertedRows = append(m.InsertedRows, make([]byte, postIndex-iNdEx))
+			copy(m.InsertedRows[len(m.InsertedRows)-1], data[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UpdatedRows", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBinlog
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthBinlog
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.UpdatedRows = append(m.UpdatedRows, make([]byte, postIndex-iNdEx))
+			copy(m.UpdatedRows[len(m.UpdatedRows)-1], data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DeletedIds", wireType)
+			}
+			var v int64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBinlog
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				v |= (int64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.DeletedIds = append(m.DeletedIds, v)
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DeletedPks", wireType)
+			}
+			var v int64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBinlog
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				v |= (int64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.DeletedPks = append(m.DeletedPks, v)
 		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DeletedRows", wireType)
@@ -713,20 +726,20 @@ var (
 func init() { proto.RegisterFile("binlog.proto", fileDescriptorBinlog) }
 
 var fileDescriptorBinlog = []byte{
-	// 225 bytes of a gzipped FileDescriptorProto
+	// 233 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xe2, 0xe2, 0x49, 0xca, 0xcc, 0xcb,
 	0xc9, 0x4f, 0xd7, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x83, 0xf0, 0xa4, 0x44, 0xd2, 0xf3,
-	0xd3, 0xf3, 0xc1, 0x42, 0xfa, 0x20, 0x16, 0x44, 0x56, 0x69, 0x12, 0x23, 0x17, 0x6f, 0x48, 0x62,
+	0xd3, 0xf3, 0xc1, 0x42, 0xfa, 0x20, 0x16, 0x44, 0x56, 0x69, 0x0a, 0x23, 0x17, 0x6f, 0x48, 0x62,
 	0x52, 0x4e, 0xaa, 0x6f, 0x69, 0x49, 0x62, 0x49, 0x66, 0x7e, 0x9e, 0x90, 0x18, 0x17, 0x47, 0x09,
 	0x48, 0x20, 0x3e, 0x33, 0x45, 0x82, 0x51, 0x81, 0x51, 0x83, 0xd9, 0x89, 0xe5, 0xc4, 0x3d, 0x79,
-	0x06, 0x21, 0x11, 0x2e, 0x9e, 0xcc, 0xbc, 0xe2, 0xd4, 0xa2, 0x92, 0xd4, 0x94, 0xf8, 0xcc, 0x94,
-	0x62, 0x09, 0x26, 0x05, 0x66, 0x0d, 0x66, 0x21, 0x61, 0x2e, 0xee, 0xd2, 0x82, 0x94, 0x44, 0x98,
-	0x20, 0x33, 0x4c, 0x30, 0x25, 0x35, 0x27, 0x15, 0x26, 0xc8, 0x82, 0x2e, 0x58, 0x90, 0x5d, 0x2c,
-	0xc1, 0xaa, 0xc0, 0xac, 0xc1, 0x03, 0x32, 0x14, 0x26, 0x58, 0x94, 0x5f, 0x5e, 0x2c, 0xc1, 0x06,
-	0x12, 0x55, 0x0a, 0xe3, 0x62, 0x73, 0x02, 0x3b, 0x5a, 0x48, 0x86, 0x8b, 0xaf, 0x38, 0x39, 0x23,
-	0x35, 0x37, 0x31, 0xbe, 0x2c, 0xb5, 0xa8, 0x38, 0x33, 0x3f, 0x0f, 0xc5, 0x49, 0x7a, 0x5c, 0x9c,
-	0xb9, 0x50, 0x67, 0x43, 0xdc, 0xc3, 0x6d, 0x24, 0xaa, 0x07, 0xf5, 0x3c, 0x8a, 0xa7, 0x20, 0xea,
-	0x9d, 0x04, 0x4e, 0x3c, 0x92, 0x63, 0xbc, 0xf0, 0x48, 0x8e, 0xf1, 0xc1, 0x23, 0x39, 0xc6, 0x19,
-	0x8f, 0xe5, 0x18, 0x00, 0x01, 0x00, 0x00, 0xff, 0xff, 0x40, 0xb2, 0xd9, 0x0d, 0x2b, 0x01, 0x00,
-	0x00,
+	0x06, 0x21, 0x51, 0x2e, 0xde, 0xcc, 0xbc, 0xe2, 0xd4, 0xa2, 0x92, 0xd4, 0x94, 0xf8, 0xa2, 0xfc,
+	0xf2, 0x62, 0x09, 0x26, 0x05, 0x66, 0x0d, 0x1e, 0x21, 0x11, 0x2e, 0x9e, 0xd2, 0x82, 0x94, 0x44,
+	0xb8, 0x28, 0x33, 0x58, 0x54, 0x98, 0x8b, 0x3b, 0x25, 0x35, 0x27, 0x15, 0x24, 0x9a, 0x99, 0x52,
+	0x2c, 0xc1, 0xa2, 0xc0, 0xac, 0xc1, 0x8c, 0x2c, 0x58, 0x90, 0x5d, 0x2c, 0xc1, 0x0a, 0x16, 0x14,
+	0xe1, 0xe2, 0x81, 0x09, 0x82, 0xf5, 0xb3, 0x81, 0xf4, 0x2b, 0x85, 0x71, 0xb1, 0x39, 0x81, 0x9d,
+	0x2d, 0x24, 0xc3, 0xc5, 0x57, 0x9c, 0x9c, 0x91, 0x9a, 0x9b, 0x18, 0x5f, 0x96, 0x5a, 0x54, 0x9c,
+	0x99, 0x9f, 0x87, 0xe2, 0x28, 0x3d, 0x2e, 0xce, 0x5c, 0xa8, 0xc3, 0x21, 0x0e, 0xe2, 0x36, 0x12,
+	0xd5, 0x83, 0x7a, 0x1f, 0xc5, 0x5b, 0x10, 0xf5, 0x4e, 0x02, 0x27, 0x1e, 0xc9, 0x31, 0x5e, 0x78,
+	0x24, 0xc7, 0xf8, 0xe0, 0x91, 0x1c, 0xe3, 0x8c, 0xc7, 0x72, 0x0c, 0x80, 0x00, 0x00, 0x00, 0xff,
+	0xff, 0x42, 0xe2, 0xb6, 0x80, 0x2d, 0x01, 0x00, 0x00,
 }
