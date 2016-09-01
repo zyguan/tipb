@@ -20,7 +20,7 @@ message TableMutation {
     repeated int64 deleted_ids   = 4;
 
     // If the table has PK but PK is not handle, we save the PK of the deleted row.
-    repeated int64 deleted_pks   = 5;
+    repeated bytes deleted_pks   = 5;
 
     // If the table doesn't have PK, we save the row value of the deleted row.
     repeated bytes deleted_rows  = 6;
