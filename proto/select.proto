@@ -83,4 +83,23 @@ message SelectResponse {
 
 	// Result rows.
 	repeated Row rows = 2;
+
+    	// Use multiple chunks to reduce memory allocation and
+        // avoid allocating large contiguous memory.
+    	repeated Chunk chunks = 3 [(gogoproto.nullable) = false];
+}
+
+// Chunk contains multiple rows data and rows meta.
+message Chunk {
+    	// Data for all rows in the chunk.
+    	optional bytes rows_data = 3;
+
+    	// Meta data for every row.
+    	repeated RowMeta rows_meta = 4 [(gogoproto.nullable) = false];
+}
+
+// RowMeta contains row handle and length of a row.
+message RowMeta {
+    	optional int64 handle = 1 [(gogoproto.nullable) = false];
+    	optional int64 length = 2 [(gogoproto.nullable) = false];
 }
