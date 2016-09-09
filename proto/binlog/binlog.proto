@@ -26,6 +26,11 @@ message TableMutation {
     repeated bytes deleted_rows  = 6;
 }
 
+message PrewriteValue {
+    optional int64         schema_version = 1 [(gogoproto.nullable) = false];
+    repeated TableMutation mutations      = 2 [(gogoproto.nullable) = false];
+}
+
 enum BinlogType {
     Prewrite = 0;
     Commit   = 1;
@@ -43,10 +48,11 @@ message Binlog {
     // commit_ts is used only for binlog type Commit.
     optional int64         commit_ts      = 3 [(gogoproto.nullable) = false];
 
-    // primary_kay, schema_version and mutations is used for binlog type Prewrite.
-    // primary key is used to check that the transaction is commited or not if it failed to
-    // pair to commit log or rollback log within a time window.
-    optional bytes         primary_key    = 4;
-    optional int64         schema_version = 5 [(gogoproto.nullable) = false];
-    repeated TableMutation mutations      = 6 [(gogoproto.nullable) = false];
+    // prewrite key is the primary key of the transaction, is used to check that the transaction is
+    // commited or not if it failed to pair to commit log or rollback log within a time window.
+    optional bytes         prewrite_key   = 4;
+
+    // prewrite_data is marshalled from PrewriteData type,
+    // we do not need to unmarshal prewrite data before the binlog have been successfully paired.
+    optional bytes         prewrite_value = 5;
 }
