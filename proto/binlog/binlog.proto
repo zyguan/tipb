@@ -11,8 +11,8 @@ option (gogoproto.unmarshaler_all) = true;
 enum MutationType {
     Insert = 0;
     Update = 1;
-    DeleteID = 2;
-    DeletePK = 3;
+    DeleteID = 2; // Obsolete field.
+    DeletePK = 3; // Obsolete field.
     DeleteRow = 4;
 }
 
@@ -20,17 +20,19 @@ enum MutationType {
 message TableMutation {
     optional int64 table_id      = 1 [(gogoproto.nullable) = false];
 
-    // For inserted rows and updated rows, we save all column values of the row.
+    // The inserted row contains all column values.
     repeated bytes inserted_rows = 2;
+
+    // The updated row contains old values and new values of the row.
     repeated bytes updated_rows  = 3;
 
-    // If the table PK is handle, we can only save the id of the deleted row.
+    // Obsolete field.
     repeated int64 deleted_ids   = 4;
 
-    // If the table has PK but PK is not handle, we save the PK of the deleted row.
+    // Obsolete field.
     repeated bytes deleted_pks   = 5;
 
-    // If the table doesn't have PK, we save the row value of the deleted row.
+    // The row value of the deleted row.
     repeated bytes deleted_rows  = 6;
 
     // Used to apply table mutations in original sequence.
