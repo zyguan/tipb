@@ -34,3 +34,9 @@ message IndexInfo {
 	repeated ColumnInfo columns = 3;
 	optional bool unique = 4 [(gogoproto.nullable) = false];
 }
+
+// KeyRange is the encoded index key range, low is closed, high is open. (low <= x < high)
+message KeyRange {
+	optional bytes low = 1;
+	optional bytes high = 2;
+}
