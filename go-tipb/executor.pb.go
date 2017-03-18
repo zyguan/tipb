@@ -52,7 +52,9 @@ var _ = math.Inf
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
-const _ = proto.ProtoPackageIsVersion1
+// A compilation error at this line likely means your copy of the
+// proto package needs to be updated.
+const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type ExecType int32
 
@@ -62,7 +64,7 @@ const (
 	ExecType_TypeSelection   ExecType = 2
 	ExecType_TypeAggregation ExecType = 3
 	ExecType_TypeTopN        ExecType = 4
-	ExecType_TypeLimi        ExecType = 5
+	ExecType_TypeLimit       ExecType = 5
 )
 
 var ExecType_name = map[int32]string{
@@ -71,7 +73,7 @@ var ExecType_name = map[int32]string{
 	2: "TypeSelection",
 	3: "TypeAggregation",
 	4: "TypeTopN",
-	5: "TypeLimi",
+	5: "TypeLimit",
 }
 var ExecType_value = map[string]int32{
 	"TypeTableScan":   0,
@@ -79,7 +81,7 @@ var ExecType_value = map[string]int32{
 	"TypeSelection":   2,
 	"TypeAggregation": 3,
 	"TypeTopN":        4,
-	"TypeLimi":        5,
+	"TypeLimit":       5,
 }
 
 func (x ExecType) Enum() *ExecType {
@@ -103,8 +105,8 @@ func (ExecType) EnumDescriptor() ([]byte, []int) { return fileDescriptorExecutor
 // It represents a Executor.
 type Executor struct {
 	Tp               ExecType     `protobuf:"varint,1,opt,name=tp,enum=tipb.ExecType" json:"tp"`
-	TblScan          *TableScan   `protobuf:"bytes,2,opt,name=tbl_scan" json:"tbl_scan,omitempty"`
-	IdxScan          *IndexScan   `protobuf:"bytes,3,opt,name=idx_scan" json:"idx_scan,omitempty"`
+	TblScan          *TableScan   `protobuf:"bytes,2,opt,name=tbl_scan,json=tblScan" json:"tbl_scan,omitempty"`
+	IdxScan          *IndexScan   `protobuf:"bytes,3,opt,name=idx_scan,json=idxScan" json:"idx_scan,omitempty"`
 	Selection        *Selection   `protobuf:"bytes,4,opt,name=selection" json:"selection,omitempty"`
 	Aggregation      *Aggregation `protobuf:"bytes,5,opt,name=aggregation" json:"aggregation,omitempty"`
 	TopN             *TopN        `protobuf:"bytes,6,opt,name=topN" json:"topN,omitempty"`
@@ -167,12 +169,10 @@ func (m *Executor) GetLimit() *Limit {
 }
 
 type TableScan struct {
-	TableId int64         `protobuf:"varint,1,opt,name=table_id" json:"table_id"`
-	Columns []*ColumnInfo `protobuf:"bytes,2,rep,name=columns" json:"columns,omitempty"`
-	Desc    *bool         `protobuf:"varint,3,opt,name=desc" json:"desc,omitempty"`
-	// Disjoint handle ranges to be scanned.
-	Ranges           []*KeyRange `protobuf:"bytes,4,rep,name=ranges" json:"ranges,omitempty"`
-	XXX_unrecognized []byte      `json:"-"`
+	TableId          int64         `protobuf:"varint,1,opt,name=table_id,json=tableId" json:"table_id"`
+	Columns          []*ColumnInfo `protobuf:"bytes,2,rep,name=columns" json:"columns,omitempty"`
+	Desc             *bool         `protobuf:"varint,3,opt,name=desc" json:"desc,omitempty"`
+	XXX_unrecognized []byte        `json:"-"`
 }
 
 func (m *TableScan) Reset()                    { *m = TableScan{} }
@@ -201,21 +201,12 @@ func (m *TableScan) GetDesc() bool {
 	return false
 }
 
-func (m *TableScan) GetRanges() []*KeyRange {
-	if m != nil {
-		return m.Ranges
-	}
-	return nil
-}
-
 type IndexScan struct {
-	TableId int64         `protobuf:"varint,1,opt,name=table_id" json:"table_id"`
-	IndexId int64         `protobuf:"varint,2,opt,name=index_id" json:"index_id"`
-	Columns []*ColumnInfo `protobuf:"bytes,3,rep,name=columns" json:"columns,omitempty"`
-	Desc    *bool         `protobuf:"varint,4,opt,name=desc" json:"desc,omitempty"`
-	// Disjoint handle ranges to be scanned.
-	Ranges           []*KeyRange `protobuf:"bytes,5,rep,name=ranges" json:"ranges,omitempty"`
-	XXX_unrecognized []byte      `json:"-"`
+	TableId          int64         `protobuf:"varint,1,opt,name=table_id,json=tableId" json:"table_id"`
+	IndexId          int64         `protobuf:"varint,2,opt,name=index_id,json=indexId" json:"index_id"`
+	Columns          []*ColumnInfo `protobuf:"bytes,3,rep,name=columns" json:"columns,omitempty"`
+	Desc             *bool         `protobuf:"varint,4,opt,name=desc" json:"desc,omitempty"`
+	XXX_unrecognized []byte        `json:"-"`
 }
 
 func (m *IndexScan) Reset()                    { *m = IndexScan{} }
@@ -251,15 +242,8 @@ func (m *IndexScan) GetDesc() bool {
 	return false
 }
 
-func (m *IndexScan) GetRanges() []*KeyRange {
-	if m != nil {
-		return m.Ranges
-	}
-	return nil
-}
-
 type Selection struct {
-	// Where condition.
+	// Where conditions.
 	Conditions       []*Expr `protobuf:"bytes,1,rep,name=conditions" json:"conditions,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
@@ -278,9 +262,9 @@ func (m *Selection) GetConditions() []*Expr {
 
 type Aggregation struct {
 	// Group by clause.
-	GroupBy []*Expr `protobuf:"bytes,1,rep,name=group_by" json:"group_by,omitempty"`
-	// Gggregate functions.
-	AggFunc          []*Expr `protobuf:"bytes,2,rep,name=agg_func" json:"agg_func,omitempty"`
+	GroupBy []*Expr `protobuf:"bytes,1,rep,name=group_by,json=groupBy" json:"group_by,omitempty"`
+	// Aggregate functions.
+	AggFunc          []*Expr `protobuf:"bytes,2,rep,name=agg_func,json=aggFunc" json:"agg_func,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -305,7 +289,7 @@ func (m *Aggregation) GetAggFunc() []*Expr {
 
 type TopN struct {
 	// Order by clause.
-	OrderBy          []*ByItem `protobuf:"bytes,1,rep,name=order_by" json:"order_by,omitempty"`
+	OrderBy          []*ByItem `protobuf:"bytes,1,rep,name=order_by,json=orderBy" json:"order_by,omitempty"`
 	Limit            *int64    `protobuf:"varint,2,opt,name=limit" json:"limit,omitempty"`
 	XXX_unrecognized []byte    `json:"-"`
 }
@@ -357,114 +341,114 @@ func init() {
 	proto.RegisterType((*Limit)(nil), "tipb.Limit")
 	proto.RegisterEnum("tipb.ExecType", ExecType_name, ExecType_value)
 }
-func (m *Executor) Marshal() (data []byte, err error) {
+func (m *Executor) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
 	if err != nil {
 		return nil, err
 	}
-	return data[:n], nil
+	return dAtA[:n], nil
 }
 
-func (m *Executor) MarshalTo(data []byte) (int, error) {
+func (m *Executor) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
-	data[i] = 0x8
+	dAtA[i] = 0x8
 	i++
-	i = encodeVarintExecutor(data, i, uint64(m.Tp))
+	i = encodeVarintExecutor(dAtA, i, uint64(m.Tp))
 	if m.TblScan != nil {
-		data[i] = 0x12
+		dAtA[i] = 0x12
 		i++
-		i = encodeVarintExecutor(data, i, uint64(m.TblScan.Size()))
-		n1, err := m.TblScan.MarshalTo(data[i:])
+		i = encodeVarintExecutor(dAtA, i, uint64(m.TblScan.Size()))
+		n1, err := m.TblScan.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n1
 	}
 	if m.IdxScan != nil {
-		data[i] = 0x1a
+		dAtA[i] = 0x1a
 		i++
-		i = encodeVarintExecutor(data, i, uint64(m.IdxScan.Size()))
-		n2, err := m.IdxScan.MarshalTo(data[i:])
+		i = encodeVarintExecutor(dAtA, i, uint64(m.IdxScan.Size()))
+		n2, err := m.IdxScan.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n2
 	}
 	if m.Selection != nil {
-		data[i] = 0x22
+		dAtA[i] = 0x22
 		i++
-		i = encodeVarintExecutor(data, i, uint64(m.Selection.Size()))
-		n3, err := m.Selection.MarshalTo(data[i:])
+		i = encodeVarintExecutor(dAtA, i, uint64(m.Selection.Size()))
+		n3, err := m.Selection.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n3
 	}
 	if m.Aggregation != nil {
-		data[i] = 0x2a
+		dAtA[i] = 0x2a
 		i++
-		i = encodeVarintExecutor(data, i, uint64(m.Aggregation.Size()))
-		n4, err := m.Aggregation.MarshalTo(data[i:])
+		i = encodeVarintExecutor(dAtA, i, uint64(m.Aggregation.Size()))
+		n4, err := m.Aggregation.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n4
 	}
 	if m.TopN != nil {
-		data[i] = 0x32
+		dAtA[i] = 0x32
 		i++
-		i = encodeVarintExecutor(data, i, uint64(m.TopN.Size()))
-		n5, err := m.TopN.MarshalTo(data[i:])
+		i = encodeVarintExecutor(dAtA, i, uint64(m.TopN.Size()))
+		n5, err := m.TopN.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n5
 	}
 	if m.Limit != nil {
-		data[i] = 0x3a
+		dAtA[i] = 0x3a
 		i++
-		i = encodeVarintExecutor(data, i, uint64(m.Limit.Size()))
-		n6, err := m.Limit.MarshalTo(data[i:])
+		i = encodeVarintExecutor(dAtA, i, uint64(m.Limit.Size()))
+		n6, err := m.Limit.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n6
 	}
 	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
+		i += copy(dAtA[i:], m.XXX_unrecognized)
 	}
 	return i, nil
 }
 
-func (m *TableScan) Marshal() (data []byte, err error) {
+func (m *TableScan) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
 	if err != nil {
 		return nil, err
 	}
-	return data[:n], nil
+	return dAtA[:n], nil
 }
 
-func (m *TableScan) MarshalTo(data []byte) (int, error) {
+func (m *TableScan) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
-	data[i] = 0x8
+	dAtA[i] = 0x8
 	i++
-	i = encodeVarintExecutor(data, i, uint64(m.TableId))
+	i = encodeVarintExecutor(dAtA, i, uint64(m.TableId))
 	if len(m.Columns) > 0 {
 		for _, msg := range m.Columns {
-			data[i] = 0x12
+			dAtA[i] = 0x12
 			i++
-			i = encodeVarintExecutor(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
+			i = encodeVarintExecutor(dAtA, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(dAtA[i:])
 			if err != nil {
 				return 0, err
 			}
@@ -472,60 +456,48 @@ func (m *TableScan) MarshalTo(data []byte) (int, error) {
 		}
 	}
 	if m.Desc != nil {
-		data[i] = 0x18
+		dAtA[i] = 0x18
 		i++
 		if *m.Desc {
-			data[i] = 1
+			dAtA[i] = 1
 		} else {
-			data[i] = 0
+			dAtA[i] = 0
 		}
 		i++
 	}
-	if len(m.Ranges) > 0 {
-		for _, msg := range m.Ranges {
-			data[i] = 0x22
-			i++
-			i = encodeVarintExecutor(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
 	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
+		i += copy(dAtA[i:], m.XXX_unrecognized)
 	}
 	return i, nil
 }
 
-func (m *IndexScan) Marshal() (data []byte, err error) {
+func (m *IndexScan) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
 	if err != nil {
 		return nil, err
 	}
-	return data[:n], nil
+	return dAtA[:n], nil
 }
 
-func (m *IndexScan) MarshalTo(data []byte) (int, error) {
+func (m *IndexScan) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
-	data[i] = 0x8
+	dAtA[i] = 0x8
 	i++
-	i = encodeVarintExecutor(data, i, uint64(m.TableId))
-	data[i] = 0x10
+	i = encodeVarintExecutor(dAtA, i, uint64(m.TableId))
+	dAtA[i] = 0x10
 	i++
-	i = encodeVarintExecutor(data, i, uint64(m.IndexId))
+	i = encodeVarintExecutor(dAtA, i, uint64(m.IndexId))
 	if len(m.Columns) > 0 {
 		for _, msg := range m.Columns {
-			data[i] = 0x1a
+			dAtA[i] = 0x1a
 			i++
-			i = encodeVarintExecutor(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
+			i = encodeVarintExecutor(dAtA, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(dAtA[i:])
 			if err != nil {
 				return 0, err
 			}
@@ -533,54 +505,42 @@ func (m *IndexScan) MarshalTo(data []byte) (int, error) {
 		}
 	}
 	if m.Desc != nil {
-		data[i] = 0x20
+		dAtA[i] = 0x20
 		i++
 		if *m.Desc {
-			data[i] = 1
+			dAtA[i] = 1
 		} else {
-			data[i] = 0
+			dAtA[i] = 0
 		}
 		i++
 	}
-	if len(m.Ranges) > 0 {
-		for _, msg := range m.Ranges {
-			data[i] = 0x2a
-			i++
-			i = encodeVarintExecutor(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
 	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
+		i += copy(dAtA[i:], m.XXX_unrecognized)
 	}
 	return i, nil
 }
 
-func (m *Selection) Marshal() (data []byte, err error) {
+func (m *Selection) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
 	if err != nil {
 		return nil, err
 	}
-	return data[:n], nil
+	return dAtA[:n], nil
 }
 
-func (m *Selection) MarshalTo(data []byte) (int, error) {
+func (m *Selection) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
 	if len(m.Conditions) > 0 {
 		for _, msg := range m.Conditions {
-			data[i] = 0xa
+			dAtA[i] = 0xa
 			i++
-			i = encodeVarintExecutor(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
+			i = encodeVarintExecutor(dAtA, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(dAtA[i:])
 			if err != nil {
 				return 0, err
 			}
@@ -588,32 +548,32 @@ func (m *Selection) MarshalTo(data []byte) (int, error) {
 		}
 	}
 	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
+		i += copy(dAtA[i:], m.XXX_unrecognized)
 	}
 	return i, nil
 }
 
-func (m *Aggregation) Marshal() (data []byte, err error) {
+func (m *Aggregation) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
 	if err != nil {
 		return nil, err
 	}
-	return data[:n], nil
+	return dAtA[:n], nil
 }
 
-func (m *Aggregation) MarshalTo(data []byte) (int, error) {
+func (m *Aggregation) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
 	if len(m.GroupBy) > 0 {
 		for _, msg := range m.GroupBy {
-			data[i] = 0xa
+			dAtA[i] = 0xa
 			i++
-			i = encodeVarintExecutor(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
+			i = encodeVarintExecutor(dAtA, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(dAtA[i:])
 			if err != nil {
 				return 0, err
 			}
@@ -622,10 +582,10 @@ func (m *Aggregation) MarshalTo(data []byte) (int, error) {
 	}
 	if len(m.AggFunc) > 0 {
 		for _, msg := range m.AggFunc {
-			data[i] = 0x12
+			dAtA[i] = 0x12
 			i++
-			i = encodeVarintExecutor(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
+			i = encodeVarintExecutor(dAtA, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(dAtA[i:])
 			if err != nil {
 				return 0, err
 			}
@@ -633,32 +593,32 @@ func (m *Aggregation) MarshalTo(data []byte) (int, error) {
 		}
 	}
 	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
+		i += copy(dAtA[i:], m.XXX_unrecognized)
 	}
 	return i, nil
 }
 
-func (m *TopN) Marshal() (data []byte, err error) {
+func (m *TopN) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
 	if err != nil {
 		return nil, err
 	}
-	return data[:n], nil
+	return dAtA[:n], nil
 }
 
-func (m *TopN) MarshalTo(data []byte) (int, error) {
+func (m *TopN) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
 	if len(m.OrderBy) > 0 {
 		for _, msg := range m.OrderBy {
-			data[i] = 0xa
+			dAtA[i] = 0xa
 			i++
-			i = encodeVarintExecutor(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
+			i = encodeVarintExecutor(dAtA, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(dAtA[i:])
 			if err != nil {
 				return 0, err
 			}
@@ -666,67 +626,67 @@ func (m *TopN) MarshalTo(data []byte) (int, error) {
 		}
 	}
 	if m.Limit != nil {
-		data[i] = 0x10
+		dAtA[i] = 0x10
 		i++
-		i = encodeVarintExecutor(data, i, uint64(*m.Limit))
+		i = encodeVarintExecutor(dAtA, i, uint64(*m.Limit))
 	}
 	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
+		i += copy(dAtA[i:], m.XXX_unrecognized)
 	}
 	return i, nil
 }
 
-func (m *Limit) Marshal() (data []byte, err error) {
+func (m *Limit) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
 	if err != nil {
 		return nil, err
 	}
-	return data[:n], nil
+	return dAtA[:n], nil
 }
 
-func (m *Limit) MarshalTo(data []byte) (int, error) {
+func (m *Limit) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
 	if m.Limit != nil {
-		data[i] = 0x8
+		dAtA[i] = 0x8
 		i++
-		i = encodeVarintExecutor(data, i, uint64(*m.Limit))
+		i = encodeVarintExecutor(dAtA, i, uint64(*m.Limit))
 	}
 	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
+		i += copy(dAtA[i:], m.XXX_unrecognized)
 	}
 	return i, nil
 }
 
-func encodeFixed64Executor(data []byte, offset int, v uint64) int {
-	data[offset] = uint8(v)
-	data[offset+1] = uint8(v >> 8)
-	data[offset+2] = uint8(v >> 16)
-	data[offset+3] = uint8(v >> 24)
-	data[offset+4] = uint8(v >> 32)
-	data[offset+5] = uint8(v >> 40)
-	data[offset+6] = uint8(v >> 48)
-	data[offset+7] = uint8(v >> 56)
+func encodeFixed64Executor(dAtA []byte, offset int, v uint64) int {
+	dAtA[offset] = uint8(v)
+	dAtA[offset+1] = uint8(v >> 8)
+	dAtA[offset+2] = uint8(v >> 16)
+	dAtA[offset+3] = uint8(v >> 24)
+	dAtA[offset+4] = uint8(v >> 32)
+	dAtA[offset+5] = uint8(v >> 40)
+	dAtA[offset+6] = uint8(v >> 48)
+	dAtA[offset+7] = uint8(v >> 56)
 	return offset + 8
 }
-func encodeFixed32Executor(data []byte, offset int, v uint32) int {
-	data[offset] = uint8(v)
-	data[offset+1] = uint8(v >> 8)
-	data[offset+2] = uint8(v >> 16)
-	data[offset+3] = uint8(v >> 24)
+func encodeFixed32Executor(dAtA []byte, offset int, v uint32) int {
+	dAtA[offset] = uint8(v)
+	dAtA[offset+1] = uint8(v >> 8)
+	dAtA[offset+2] = uint8(v >> 16)
+	dAtA[offset+3] = uint8(v >> 24)
 	return offset + 4
 }
-func encodeVarintExecutor(data []byte, offset int, v uint64) int {
+func encodeVarintExecutor(dAtA []byte, offset int, v uint64) int {
 	for v >= 1<<7 {
-		data[offset] = uint8(v&0x7f | 0x80)
+		dAtA[offset] = uint8(v&0x7f | 0x80)
 		v >>= 7
 		offset++
 	}
-	data[offset] = uint8(v)
+	dAtA[offset] = uint8(v)
 	return offset + 1
 }
 func (m *Executor) Size() (n int) {
@@ -776,12 +736,6 @@ func (m *TableScan) Size() (n int) {
 	if m.Desc != nil {
 		n += 2
 	}
-	if len(m.Ranges) > 0 {
-		for _, e := range m.Ranges {
-			l = e.Size()
-			n += 1 + l + sovExecutor(uint64(l))
-		}
-	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
 	}
@@ -801,12 +755,6 @@ func (m *IndexScan) Size() (n int) {
 	}
 	if m.Desc != nil {
 		n += 2
-	}
-	if len(m.Ranges) > 0 {
-		for _, e := range m.Ranges {
-			l = e.Size()
-			n += 1 + l + sovExecutor(uint64(l))
-		}
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -893,8 +841,8 @@ func sovExecutor(x uint64) (n int) {
 func sozExecutor(x uint64) (n int) {
 	return sovExecutor(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *Executor) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *Executor) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -906,7 +854,7 @@ func (m *Executor) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -934,7 +882,7 @@ func (m *Executor) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				m.Tp |= (ExecType(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -953,7 +901,7 @@ func (m *Executor) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -970,7 +918,7 @@ func (m *Executor) Unmarshal(data []byte) error {
 			if m.TblScan == nil {
 				m.TblScan = &TableScan{}
 			}
-			if err := m.TblScan.Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.TblScan.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -986,7 +934,7 @@ func (m *Executor) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -1003,7 +951,7 @@ func (m *Executor) Unmarshal(data []byte) error {
 			if m.IdxScan == nil {
 				m.IdxScan = &IndexScan{}
 			}
-			if err := m.IdxScan.Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.IdxScan.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1019,7 +967,7 @@ func (m *Executor) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -1036,7 +984,7 @@ func (m *Executor) Unmarshal(data []byte) error {
 			if m.Selection == nil {
 				m.Selection = &Selection{}
 			}
-			if err := m.Selection.Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.Selection.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1052,7 +1000,7 @@ func (m *Executor) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -1069,7 +1017,7 @@ func (m *Executor) Unmarshal(data []byte) error {
 			if m.Aggregation == nil {
 				m.Aggregation = &Aggregation{}
 			}
-			if err := m.Aggregation.Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.Aggregation.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1085,7 +1033,7 @@ func (m *Executor) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -1102,7 +1050,7 @@ func (m *Executor) Unmarshal(data []byte) error {
 			if m.TopN == nil {
 				m.TopN = &TopN{}
 			}
-			if err := m.TopN.Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.TopN.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1118,7 +1066,7 @@ func (m *Executor) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -1135,13 +1083,13 @@ func (m *Executor) Unmarshal(data []byte) error {
 			if m.Limit == nil {
 				m.Limit = &Limit{}
 			}
-			if err := m.Limit.Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.Limit.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
-			skippy, err := skipExecutor(data[iNdEx:])
+			skippy, err := skipExecutor(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -1151,7 +1099,7 @@ func (m *Executor) Unmarshal(data []byte) error {
 			if (iNdEx + skippy) > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, data[iNdEx:iNdEx+skippy]...)
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
 			iNdEx += skippy
 		}
 	}
@@ -1161,8 +1109,8 @@ func (m *Executor) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *TableScan) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *TableScan) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -1174,7 +1122,7 @@ func (m *TableScan) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -1202,7 +1150,7 @@ func (m *TableScan) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				m.TableId |= (int64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -1221,7 +1169,7 @@ func (m *TableScan) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -1236,7 +1184,7 @@ func (m *TableScan) Unmarshal(data []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Columns = append(m.Columns, &ColumnInfo{})
-			if err := m.Columns[len(m.Columns)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.Columns[len(m.Columns)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1252,7 +1200,7 @@ func (m *TableScan) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				v |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -1261,40 +1209,9 @@ func (m *TableScan) Unmarshal(data []byte) error {
 			}
 			b := bool(v != 0)
 			m.Desc = &b
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Ranges", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowExecutor
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthExecutor
-			}
-			postIndex := iNdEx + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Ranges = append(m.Ranges, &KeyRange{})
-			if err := m.Ranges[len(m.Ranges)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
-			skippy, err := skipExecutor(data[iNdEx:])
+			skippy, err := skipExecutor(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -1304,7 +1221,7 @@ func (m *TableScan) Unmarshal(data []byte) error {
 			if (iNdEx + skippy) > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, data[iNdEx:iNdEx+skippy]...)
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
 			iNdEx += skippy
 		}
 	}
@@ -1314,8 +1231,8 @@ func (m *TableScan) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *IndexScan) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *IndexScan) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -1327,7 +1244,7 @@ func (m *IndexScan) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -1355,7 +1272,7 @@ func (m *IndexScan) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				m.TableId |= (int64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -1374,7 +1291,7 @@ func (m *IndexScan) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				m.IndexId |= (int64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -1393,7 +1310,7 @@ func (m *IndexScan) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -1408,7 +1325,7 @@ func (m *IndexScan) Unmarshal(data []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Columns = append(m.Columns, &ColumnInfo{})
-			if err := m.Columns[len(m.Columns)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.Columns[len(m.Columns)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1424,7 +1341,7 @@ func (m *IndexScan) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				v |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -1433,40 +1350,9 @@ func (m *IndexScan) Unmarshal(data []byte) error {
 			}
 			b := bool(v != 0)
 			m.Desc = &b
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Ranges", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowExecutor
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthExecutor
-			}
-			postIndex := iNdEx + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Ranges = append(m.Ranges, &KeyRange{})
-			if err := m.Ranges[len(m.Ranges)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
-			skippy, err := skipExecutor(data[iNdEx:])
+			skippy, err := skipExecutor(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -1476,7 +1362,7 @@ func (m *IndexScan) Unmarshal(data []byte) error {
 			if (iNdEx + skippy) > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, data[iNdEx:iNdEx+skippy]...)
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
 			iNdEx += skippy
 		}
 	}
@@ -1486,8 +1372,8 @@ func (m *IndexScan) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *Selection) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *Selection) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -1499,7 +1385,7 @@ func (m *Selection) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -1527,7 +1413,7 @@ func (m *Selection) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -1542,13 +1428,13 @@ func (m *Selection) Unmarshal(data []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Conditions = append(m.Conditions, &Expr{})
-			if err := m.Conditions[len(m.Conditions)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.Conditions[len(m.Conditions)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
-			skippy, err := skipExecutor(data[iNdEx:])
+			skippy, err := skipExecutor(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -1558,7 +1444,7 @@ func (m *Selection) Unmarshal(data []byte) error {
 			if (iNdEx + skippy) > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, data[iNdEx:iNdEx+skippy]...)
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
 			iNdEx += skippy
 		}
 	}
@@ -1568,8 +1454,8 @@ func (m *Selection) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *Aggregation) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *Aggregation) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -1581,7 +1467,7 @@ func (m *Aggregation) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -1609,7 +1495,7 @@ func (m *Aggregation) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -1624,7 +1510,7 @@ func (m *Aggregation) Unmarshal(data []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.GroupBy = append(m.GroupBy, &Expr{})
-			if err := m.GroupBy[len(m.GroupBy)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.GroupBy[len(m.GroupBy)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1640,7 +1526,7 @@ func (m *Aggregation) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -1655,13 +1541,13 @@ func (m *Aggregation) Unmarshal(data []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.AggFunc = append(m.AggFunc, &Expr{})
-			if err := m.AggFunc[len(m.AggFunc)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.AggFunc[len(m.AggFunc)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
-			skippy, err := skipExecutor(data[iNdEx:])
+			skippy, err := skipExecutor(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -1671,7 +1557,7 @@ func (m *Aggregation) Unmarshal(data []byte) error {
 			if (iNdEx + skippy) > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, data[iNdEx:iNdEx+skippy]...)
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
 			iNdEx += skippy
 		}
 	}
@@ -1681,8 +1567,8 @@ func (m *Aggregation) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *TopN) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *TopN) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -1694,7 +1580,7 @@ func (m *TopN) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -1722,7 +1608,7 @@ func (m *TopN) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -1737,7 +1623,7 @@ func (m *TopN) Unmarshal(data []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.OrderBy = append(m.OrderBy, &ByItem{})
-			if err := m.OrderBy[len(m.OrderBy)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
+			if err := m.OrderBy[len(m.OrderBy)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1753,7 +1639,7 @@ func (m *TopN) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				v |= (int64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -1763,7 +1649,7 @@ func (m *TopN) Unmarshal(data []byte) error {
 			m.Limit = &v
 		default:
 			iNdEx = preIndex
-			skippy, err := skipExecutor(data[iNdEx:])
+			skippy, err := skipExecutor(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -1773,7 +1659,7 @@ func (m *TopN) Unmarshal(data []byte) error {
 			if (iNdEx + skippy) > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, data[iNdEx:iNdEx+skippy]...)
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
 			iNdEx += skippy
 		}
 	}
@@ -1783,8 +1669,8 @@ func (m *TopN) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *Limit) Unmarshal(data []byte) error {
-	l := len(data)
+func (m *Limit) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		preIndex := iNdEx
@@ -1796,7 +1682,7 @@ func (m *Limit) Unmarshal(data []byte) error {
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -1824,7 +1710,7 @@ func (m *Limit) Unmarshal(data []byte) error {
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				v |= (int64(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -1834,7 +1720,7 @@ func (m *Limit) Unmarshal(data []byte) error {
 			m.Limit = &v
 		default:
 			iNdEx = preIndex
-			skippy, err := skipExecutor(data[iNdEx:])
+			skippy, err := skipExecutor(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
@@ -1844,7 +1730,7 @@ func (m *Limit) Unmarshal(data []byte) error {
 			if (iNdEx + skippy) > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, data[iNdEx:iNdEx+skippy]...)
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
 			iNdEx += skippy
 		}
 	}
@@ -1854,8 +1740,8 @@ func (m *Limit) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func skipExecutor(data []byte) (n int, err error) {
-	l := len(data)
+func skipExecutor(dAtA []byte) (n int, err error) {
+	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
 		var wire uint64
@@ -1866,7 +1752,7 @@ func skipExecutor(data []byte) (n int, err error) {
 			if iNdEx >= l {
 				return 0, io.ErrUnexpectedEOF
 			}
-			b := data[iNdEx]
+			b := dAtA[iNdEx]
 			iNdEx++
 			wire |= (uint64(b) & 0x7F) << shift
 			if b < 0x80 {
@@ -1884,7 +1770,7 @@ func skipExecutor(data []byte) (n int, err error) {
 					return 0, io.ErrUnexpectedEOF
 				}
 				iNdEx++
-				if data[iNdEx-1] < 0x80 {
+				if dAtA[iNdEx-1] < 0x80 {
 					break
 				}
 			}
@@ -1901,7 +1787,7 @@ func skipExecutor(data []byte) (n int, err error) {
 				if iNdEx >= l {
 					return 0, io.ErrUnexpectedEOF
 				}
-				b := data[iNdEx]
+				b := dAtA[iNdEx]
 				iNdEx++
 				length |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
@@ -1924,7 +1810,7 @@ func skipExecutor(data []byte) (n int, err error) {
 					if iNdEx >= l {
 						return 0, io.ErrUnexpectedEOF
 					}
-					b := data[iNdEx]
+					b := dAtA[iNdEx]
 					iNdEx++
 					innerWire |= (uint64(b) & 0x7F) << shift
 					if b < 0x80 {
@@ -1935,7 +1821,7 @@ func skipExecutor(data []byte) (n int, err error) {
 				if innerWireType == 4 {
 					break
 				}
-				next, err := skipExecutor(data[start:])
+				next, err := skipExecutor(dAtA[start:])
 				if err != nil {
 					return 0, err
 				}
@@ -1959,38 +1845,43 @@ var (
 	ErrIntOverflowExecutor   = fmt.Errorf("proto: integer overflow")
 )
 
+func init() { proto.RegisterFile("executor.proto", fileDescriptorExecutor) }
+
 var fileDescriptorExecutor = []byte{
-	// 512 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x92, 0xd1, 0x8a, 0xd3, 0x40,
-	0x14, 0x86, 0x3b, 0x6d, 0xba, 0x9b, 0x9e, 0x76, 0xbb, 0xd9, 0x51, 0x4b, 0x28, 0x12, 0x6b, 0x2e,
-	0xa4, 0x2a, 0x54, 0x28, 0xf8, 0x00, 0x56, 0xbc, 0x28, 0x4a, 0x11, 0x77, 0xef, 0x4b, 0x32, 0x99,
-	0x1d, 0x07, 0x92, 0x99, 0x21, 0x99, 0x42, 0xfb, 0x0e, 0x3e, 0x80, 0x8f, 0xb4, 0x97, 0x3e, 0x81,
-	0x48, 0x7d, 0x05, 0x1f, 0x40, 0x66, 0x92, 0x34, 0x41, 0x57, 0xbc, 0xea, 0xcc, 0x7f, 0xbe, 0x9e,
-	0xfc, 0xe7, 0x3f, 0x03, 0x63, 0xba, 0xa7, 0x64, 0xa7, 0x65, 0xbe, 0x50, 0xb9, 0xd4, 0x12, 0x3b,
-	0x9a, 0xab, 0x78, 0xea, 0xd1, 0xbd, 0xca, 0x69, 0x51, 0x70, 0x29, 0x4a, 0x7d, 0x3a, 0x2a, 0xc8,
-	0x67, 0x9a, 0x45, 0xd5, 0xed, 0x21, 0x93, 0x4c, 0xda, 0xe3, 0x2b, 0x73, 0x2a, 0xd5, 0xf0, 0x17,
-	0x02, 0xf7, 0x5d, 0xd5, 0x0e, 0xcf, 0xa0, 0xab, 0x95, 0x8f, 0x66, 0x68, 0x3e, 0x5e, 0x8e, 0x17,
-	0xa6, 0xeb, 0xc2, 0xd4, 0x6e, 0x0e, 0x8a, 0xae, 0x9c, 0xbb, 0xef, 0x4f, 0x3a, 0xf8, 0x29, 0xb8,
-	0x3a, 0x4e, 0xb7, 0x05, 0x89, 0x84, 0xdf, 0x9d, 0xa1, 0xf9, 0x70, 0x79, 0x59, 0x72, 0x37, 0x51,
-	0x9c, 0xd2, 0x6b, 0x12, 0x09, 0x83, 0xf0, 0x64, 0x5f, 0x22, 0xbd, 0x36, 0xb2, 0x16, 0x09, 0xdd,
-	0x5b, 0x24, 0x84, 0x41, 0x41, 0x53, 0x4a, 0x34, 0x97, 0xc2, 0x77, 0xda, 0xcc, 0x75, 0x2d, 0xe3,
-	0x67, 0x30, 0x8c, 0x18, 0xcb, 0x29, 0x8b, 0x2c, 0xd5, 0xb7, 0xd4, 0x55, 0x49, 0xbd, 0x69, 0x0a,
-	0xd8, 0x07, 0x47, 0x4b, 0xb5, 0xf1, 0xcf, 0x2c, 0x00, 0x95, 0x1b, 0xa9, 0x36, 0x78, 0x0a, 0xfd,
-	0x94, 0x67, 0x5c, 0xfb, 0xe7, 0xb6, 0x34, 0x2c, 0x4b, 0x1f, 0x8c, 0x14, 0x6a, 0x18, 0x34, 0x8e,
-	0x27, 0xe0, 0x6a, 0x73, 0xd9, 0xf2, 0xc4, 0x0e, 0xdf, 0x3b, 0x0d, 0x7b, 0x4e, 0x64, 0xba, 0xcb,
-	0x44, 0xe1, 0x77, 0x67, 0xbd, 0xf9, 0x70, 0xe9, 0x95, 0x2d, 0xde, 0x5a, 0x71, 0x2d, 0x6e, 0x25,
-	0x1e, 0x81, 0x93, 0xd0, 0x82, 0xd8, 0x41, 0x5d, 0x1c, 0xc0, 0x59, 0x1e, 0x09, 0x46, 0x0b, 0xdf,
-	0xb1, 0x7c, 0x95, 0xe1, 0x7b, 0x7a, 0xf8, 0x64, 0xe4, 0xf0, 0x0b, 0x82, 0x41, 0x93, 0xc2, 0xbf,
-	0x3e, 0x3b, 0x01, 0x97, 0x1b, 0xc8, 0xe8, 0xdd, 0xfb, 0xed, 0xf4, 0xfe, 0x63, 0xc7, 0xf9, 0xc3,
-	0x4e, 0xff, 0x5e, 0x3b, 0x2f, 0x61, 0xd0, 0xe4, 0x1d, 0x00, 0x10, 0x29, 0x12, 0x6e, 0x2e, 0x85,
-	0x8f, 0xec, 0x1f, 0xa0, 0x7e, 0x03, 0x2a, 0x0f, 0xd7, 0x30, 0x6c, 0xc7, 0xfe, 0x18, 0x5c, 0x96,
-	0xcb, 0x9d, 0xda, 0xc6, 0x87, 0xbf, 0x61, 0x53, 0x8d, 0x18, 0xdb, 0xde, 0xee, 0x04, 0xa9, 0xa2,
-	0x6b, 0xb7, 0x7a, 0x0d, 0x8e, 0x5d, 0x50, 0x00, 0xae, 0xcc, 0x13, 0x9a, 0x37, 0x3d, 0x46, 0x25,
-	0xb5, 0x3a, 0xac, 0x35, 0xcd, 0xf0, 0x45, 0xbd, 0x40, 0x9b, 0x42, 0x38, 0x81, 0xbe, 0x5d, 0x5e,
-	0xa3, 0xdb, 0xd4, 0x5e, 0xe8, 0xf2, 0x05, 0x9b, 0x57, 0x8a, 0xaf, 0xe0, 0xc2, 0xfc, 0x9e, 0x76,
-	0xeb, 0x75, 0x6a, 0xe9, 0x94, 0xbb, 0x87, 0x6a, 0xe9, 0x34, 0xbc, 0xd7, 0xc5, 0x0f, 0xe0, 0xd2,
-	0x48, 0xad, 0x11, 0xbd, 0x1e, 0x1e, 0x81, 0x6b, 0xbb, 0x49, 0xb5, 0xf1, 0x9c, 0xfa, 0x66, 0x3c,
-	0x78, 0xfd, 0xd5, 0xf3, 0xbb, 0x63, 0x80, 0xbe, 0x1d, 0x03, 0xf4, 0xe3, 0x18, 0xa0, 0xaf, 0x3f,
-	0x83, 0x0e, 0x3c, 0x22, 0x32, 0x5b, 0x28, 0x2e, 0x18, 0x89, 0xd4, 0x42, 0xf3, 0x24, 0xb6, 0xc3,
-	0x7c, 0x44, 0xbf, 0x03, 0x00, 0x00, 0xff, 0xff, 0x00, 0xe1, 0x85, 0x5f, 0xb0, 0x03, 0x00, 0x00,
+	// 558 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0x8c, 0x93, 0xd1, 0x8a, 0xd3, 0x4e,
+	0x14, 0xc6, 0x9b, 0x34, 0xfd, 0x27, 0x3d, 0xed, 0x76, 0xb3, 0xf3, 0x5f, 0x21, 0x2c, 0xd8, 0xd6,
+	0xa2, 0x58, 0x0b, 0x56, 0xa8, 0x17, 0x5e, 0x5b, 0x59, 0xa1, 0x20, 0x45, 0xb2, 0x7b, 0xe7, 0x45,
+	0x49, 0x26, 0xb3, 0x71, 0x20, 0x9d, 0x19, 0x92, 0x09, 0xb4, 0x0f, 0xe1, 0xbd, 0x6f, 0xe1, 0x6b,
+	0xec, 0xa5, 0x4f, 0x20, 0x52, 0x5f, 0x44, 0x66, 0xa6, 0x49, 0xb3, 0x20, 0xe8, 0x55, 0xcf, 0x7c,
+	0xdf, 0x6f, 0x4e, 0x4f, 0xbe, 0x93, 0xc0, 0x80, 0xec, 0x08, 0x2e, 0x25, 0xcf, 0xe7, 0x22, 0xe7,
+	0x92, 0x23, 0x47, 0x52, 0x11, 0x5f, 0xf9, 0x64, 0x27, 0x72, 0x52, 0x14, 0x94, 0x33, 0xa3, 0x5f,
+	0xf5, 0x0b, 0xfc, 0x99, 0x6c, 0xa3, 0xe3, 0xe9, 0x32, 0xe5, 0x29, 0xd7, 0xe5, 0x2b, 0x55, 0x19,
+	0x75, 0xf2, 0xcd, 0x06, 0xef, 0xfa, 0xd8, 0x0e, 0x3d, 0x05, 0x5b, 0x8a, 0xc0, 0x1a, 0x5b, 0xd3,
+	0xc1, 0x62, 0x30, 0x57, 0x5d, 0xe7, 0xca, 0xbb, 0xdd, 0x0b, 0xb2, 0x74, 0xee, 0x7f, 0x8c, 0x5a,
+	0xa1, 0x2d, 0x05, 0x9a, 0x81, 0x27, 0xe3, 0x6c, 0x53, 0xe0, 0x88, 0x05, 0xf6, 0xd8, 0x9a, 0xf6,
+	0x16, 0xe7, 0x86, 0xbd, 0x8d, 0xe2, 0x8c, 0xdc, 0xe0, 0x88, 0x85, 0xae, 0x8c, 0x33, 0x55, 0x28,
+	0x96, 0x26, 0x3b, 0xc3, 0xb6, 0x9b, 0xec, 0x8a, 0x25, 0x64, 0x67, 0x58, 0x9a, 0xe8, 0x02, 0xbd,
+	0x84, 0x6e, 0x41, 0x32, 0x82, 0x25, 0xe5, 0x2c, 0x70, 0x9a, 0xf0, 0x4d, 0x25, 0x87, 0x27, 0x02,
+	0xbd, 0x86, 0x5e, 0x94, 0xa6, 0x39, 0x49, 0x23, 0x7d, 0xa1, 0xa3, 0x2f, 0x5c, 0x98, 0x0b, 0x6f,
+	0x4f, 0x46, 0xd8, 0xa4, 0xd0, 0x10, 0x1c, 0xc9, 0xc5, 0x3a, 0xf8, 0x4f, 0xd3, 0x70, 0x9c, 0x9b,
+	0x8b, 0x75, 0xa8, 0x75, 0xf4, 0x04, 0x3a, 0x19, 0xdd, 0x52, 0x19, 0xb8, 0x1a, 0xe8, 0x19, 0xe0,
+	0x83, 0x92, 0x42, 0xe3, 0x4c, 0x32, 0xe8, 0xd6, 0x0f, 0x8a, 0x46, 0xe0, 0x49, 0x75, 0xd8, 0xd0,
+	0x44, 0xe7, 0xd6, 0x3e, 0xe6, 0xe4, 0x6a, 0x75, 0x95, 0xa0, 0x19, 0xb8, 0x98, 0x67, 0xe5, 0x96,
+	0x15, 0x81, 0x3d, 0x6e, 0x4f, 0x7b, 0x0b, 0xdf, 0xb4, 0x7c, 0xa7, 0xc5, 0x15, 0xbb, 0xe3, 0x61,
+	0x05, 0x20, 0x04, 0x4e, 0x42, 0x0a, 0xac, 0x83, 0xf2, 0x42, 0x5d, 0x4f, 0xbe, 0x58, 0xd0, 0xad,
+	0xb3, 0xfa, 0xfb, 0xdf, 0x8d, 0xc0, 0xa3, 0x8a, 0x56, 0x80, 0xdd, 0x04, 0xb4, 0xfa, 0x70, 0x9e,
+	0xf6, 0xbf, 0xce, 0xe3, 0x34, 0xe6, 0x79, 0x03, 0xdd, 0x7a, 0x1b, 0x68, 0x06, 0x80, 0x39, 0x4b,
+	0xa8, 0x3a, 0x14, 0x81, 0xa5, 0xfb, 0x41, 0xf5, 0xde, 0x88, 0x3c, 0x6c, 0xb8, 0x93, 0x4f, 0xd0,
+	0x6b, 0x6c, 0x05, 0x3d, 0x03, 0x2f, 0xcd, 0x79, 0x29, 0x36, 0xf1, 0xfe, 0x0f, 0x17, 0x5d, 0xed,
+	0x2d, 0xf7, 0x0a, 0x8b, 0xd2, 0x74, 0x73, 0x57, 0x32, 0x7c, 0xcc, 0xef, 0x01, 0x16, 0xa5, 0xe9,
+	0xfb, 0x92, 0xe1, 0xc9, 0x35, 0x38, 0x6a, 0x89, 0xe8, 0x39, 0x78, 0x3c, 0x4f, 0x48, 0x7e, 0xea,
+	0xda, 0x37, 0xf8, 0x72, 0xbf, 0x92, 0x64, 0x1b, 0xba, 0xda, 0x5d, 0xee, 0xd1, 0x65, 0xb5, 0x67,
+	0x1d, 0x52, 0xb5, 0xda, 0xc7, 0xd0, 0xd1, 0xab, 0x3e, 0xd9, 0x56, 0xc3, 0x9e, 0x95, 0xe6, 0x53,
+	0x51, 0x9f, 0x03, 0xba, 0x80, 0x33, 0xf5, 0x5b, 0xbf, 0x09, 0x7e, 0xab, 0x92, 0xea, 0x6d, 0xf9,
+	0x56, 0x25, 0xd5, 0x89, 0xf9, 0x36, 0xfa, 0x1f, 0xce, 0x95, 0xd4, 0xc8, 0xc2, 0x6f, 0xa3, 0x3e,
+	0x78, 0xba, 0x1b, 0x17, 0x6b, 0xdf, 0x41, 0x67, 0xd0, 0x55, 0x27, 0x3d, 0x8a, 0xdf, 0x59, 0xbe,
+	0xb8, 0x3f, 0x0c, 0xad, 0xef, 0x87, 0xa1, 0xf5, 0xf3, 0x30, 0xb4, 0xbe, 0xfe, 0x1a, 0xb6, 0xe0,
+	0x11, 0xe6, 0xdb, 0xb9, 0xa0, 0x2c, 0xc5, 0x91, 0x98, 0x4b, 0x9a, 0xc4, 0xfa, 0x21, 0x3f, 0x5a,
+	0xbf, 0x03, 0x00, 0x00, 0xff, 0xff, 0x57, 0x38, 0x40, 0xfc, 0x1a, 0x04, 0x00, 0x00,
 }

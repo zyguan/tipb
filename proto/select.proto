@@ -107,7 +107,7 @@ message RowMeta {
     	optional int64 length = 2 [(gogoproto.nullable) = false];
 }
 
-// DAGRequest works like a simplified select statement with DAG mode.
+// DAGRequest represents the request that will be handled with DAG mode.
 message DAGRequest {
 	// Transaction start timestamp.
 	optional uint64 start_ts = 1 [(gogoproto.nullable) = false];

@@ -19,7 +19,7 @@ enum ExecType {
 	TypeSelection = 2;
 	TypeAggregation = 3;
 	TypeTopN = 4;
-	TypeLimi = 5;
+	TypeLimit = 5;
 }
 
 // It represents a Executor.
@@ -37,8 +37,6 @@ message TableScan {
 	optional int64 table_id = 1 [(gogoproto.nullable) = false];
 	repeated ColumnInfo columns = 2;
 	optional bool desc = 3;
-	// Disjoint handle ranges to be scanned.
-	repeated KeyRange ranges = 4; 
 }
 
 message IndexScan {
@@ -46,19 +44,17 @@ message IndexScan {
 	optional int64 index_id = 2 [(gogoproto.nullable) = false];
 	repeated ColumnInfo columns = 3;
 	optional bool desc = 4;
-	// Disjoint handle ranges to be scanned.
-	repeated KeyRange ranges = 5; 
 }
 
 message Selection {
-	// Where condition.
+	// Where conditions.
 	repeated Expr conditions = 1;   
 }
 
 message Aggregation {
 	// Group by clause.
 	repeated Expr group_by = 1;
-	// Gggregate functions.
+	// Aggregate functions.
 	repeated Expr agg_func = 2;
 }
 
