@@ -158,3 +158,9 @@ message Expr {
 	optional bytes val = 2;
 	repeated Expr children = 3;
 }
+
+// ByItem type for group by and order by.
+message ByItem {
+	optional Expr expr = 1;
+	optional bool desc = 2 [(gogoproto.nullable) = false];
+}
