@@ -112,7 +112,7 @@ message DAGRequest {
 	// Transaction start timestamp.
 	optional uint64 start_ts = 1 [(gogoproto.nullable) = false];
 
-	// It represents some Executors.
+	// It represents push down Executors.
 	repeated Executor executors = 2;
 
 	// time zone offset in seconds
@@ -126,4 +126,7 @@ message DAGRequest {
 	//	...
 	//	add more when needed.
 	optional uint64 flags = 4 [(gogoproto.nullable) = false];
+
+    // It represents which columns we should output
+    repeated uint32 output_offsets = 5;
 }
