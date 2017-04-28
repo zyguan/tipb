@@ -127,6 +127,6 @@ message DAGRequest {
 	//	add more when needed.
 	optional uint64 flags = 4 [(gogoproto.nullable) = false];
 
-	// It represents which columns we should output
+	// It represents which columns we should output.
 	repeated uint32 output_offsets = 5;
 }
