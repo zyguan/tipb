@@ -142,6 +142,21 @@ enum ExprType {
 	Greatest = 3502;
 	Least = 3503;
 
+	/* Json functions; */
+	JsonExtract = 3601;
+	JsonType = 3602;
+	JsonArray = 3603;
+	JsonObject = 3604;
+	JsonMerge = 3605;
+	JsonValid = 3606;
+	JsonSet = 3607;
+	JsonInsert = 3608;
+	JsonReplace = 3609;
+	JsonRemove = 3610;
+	JsonContains = 3611;
+	JsonUnquote = 3612;
+	JsonContainsPath = 3613;
+
 	/* Other expressions. */
 	In = 4001;
 	IsTruth = 4002;
