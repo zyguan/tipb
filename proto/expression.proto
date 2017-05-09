@@ -154,6 +154,7 @@ enum ExprType {
 	JsonReplace = 3609;
 	JsonRemove = 3610;
 	JsonContains = 3611;
+	JsonUnquote = 3612;
 
 	/* Other expressions. */
 	In = 4001;
