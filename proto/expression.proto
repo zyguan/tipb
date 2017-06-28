@@ -165,6 +165,19 @@ enum ExprType {
 	Like = 4005;
 	RLike = 4006;
 	Case = 4007;
+
+	/* Scalar Function */
+	ScalarFunc = 10000;
+}
+
+enum ScalarFuncSig {
+	/* Math Arithmatic */
+	PlusInt = 1;
+	PlusReal = 2;
+	PlusString = 3;
+	PlusDecimal = 4;
+	PlusTime = 5;
+	PlusDuration = 6;
 }
 
 // Evaluators should implement evaluation functions for every expression type.
@@ -172,6 +185,7 @@ message Expr {
 	optional ExprType tp = 1 [(gogoproto.nullable) = false];
 	optional bytes val = 2;
 	repeated Expr children = 3;
+	optional ScalarFuncSig sig = 4;
 }
 
 // ByItem type for group by and order by.
