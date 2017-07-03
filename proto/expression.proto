@@ -171,13 +171,48 @@ enum ExprType {
 }
 
 enum ScalarFuncSig {
-	/* Math Arithmatic */
-	PlusInt = 1;
-	PlusReal = 2;
-	PlusString = 3;
-	PlusDecimal = 4;
-	PlusTime = 5;
-	PlusDuration = 6;
+    /* Casting */
+	CastInAsInt = 0;
+	CastIntAsReal = 1;
+	CastIntAsString = 2;
+	CastIntAsDecimal = 3;
+	CastIntAsTime = 4;
+	CastIntAsDuration = 5;
+
+	CastRealAsInt = 10;
+	CastRealAsReal = 11;
+	CastRealAsString = 12;
+	CastRealAsDecimal = 13;
+	CastRealAsTime = 14;
+	CastRealAsDuration = 15;
+
+	CastDecimalAsInt = 20;
+	CastDecimalAsReal = 21;
+	CastDecimalAsString = 22;
+	CastDecimalAsDecimal = 23;
+	CastDecimalAsTime = 24;
+	CastDecimalAsDuration = 25;
+
+	CastStringAsInt = 30;
+	CastStringAsReal = 31;
+	CastStringAsString = 32;
+	CastStringAsDecimal = 33;
+	CastStringAsTime = 34;
+	CastStringAsDuration = 35;
+
+	CastTimeAsInt = 40;
+	CastTimeAsReal = 41;
+	CastTimeAsString = 42;
+	CastTimeAsDecimal = 43;
+	CastTimeAsTime = 44;
+	CastTimeAsDuration = 45;
+
+	CastDurationAsInt = 50;
+	CastDurationAsReal = 51;
+	CastDurationAsString = 52;
+	CastDurationAsDecimal = 53;
+	CastDurationAsTime = 54;
+	CastDurationAsDuration = 55;
 }
 
 // Evaluators should implement evaluation functions for every expression type.
