@@ -213,6 +213,63 @@ enum ScalarFuncSig {
 	CastDurationAsDecimal = 53;
 	CastDurationAsTime = 54;
 	CastDurationAsDuration = 55;
+
+	LTInt = 100;
+	LTReal = 101;
+	LTDecimal = 102;
+	LTString = 103;
+	LTTime = 104;
+	LTDuration = 105;
+
+	LEInt = 110;
+	LEReal = 111;
+	LEDecimal = 112;
+	LEString = 113;
+	LETime = 114;
+	LEDuration = 115;
+
+	GTInt = 120;
+	GTReal = 121;
+	GTDecimal = 122;
+	GTString = 123;
+	GTTime = 124;
+	GTDuration = 125;
+
+	GEInt = 130;
+	GEReal = 131;
+	GEDecimal = 132;
+	GEString = 133;
+	GETime = 134;
+	GEDuration = 135;
+
+	EQInt = 140;
+	EQReal = 141;
+	EQDecimal = 142;
+	EQString = 143;
+	EQTime = 144;
+	EQDuration = 145;
+
+	NEInt = 150;
+	NEReal = 151;
+	NEDecimal = 152;
+	NEString = 153;
+	NETime = 154;
+	NEDuration = 155;
+
+	NullEQInt = 160;
+	NullEQReal = 161;
+	NullEQDecimal = 162;
+	NullEQString = 163;
+	NullEQTime = 164;
+	NullEQDuration = 165;
+
+	AbsInt = 2101;
+	AbsReal = 2102;
+	AbsDecimal = 2103;
+	CeilInt = 2104;
+	CeilReal = 2105;
+	FloorInt = 2106;
+	FloorReal = 2107;
 }
 
 // Evaluators should implement evaluation functions for every expression type.
