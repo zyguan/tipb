@@ -295,16 +295,13 @@ enum ScalarFuncSig {
 
 	PlusReal = 200;
 	PlusDecimal = 201;
-	PlusIntUnsigned = 202;
 	PlusInt = 203;
 	MinusReal = 204;
 	MinusDecimal = 205;
-	MinusIntUnsigned = 206;
 	MinusInt = 207;
 	MultiplyReal = 208;
 	MultiplyDecimal = 209;
 	MultiplyInt = 210;
-	MultiplyIntUnsigned = 211;
 
 	AbsInt = 2101;
 	AbsUInt = 2102;
