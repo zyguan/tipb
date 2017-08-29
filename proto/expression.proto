@@ -347,6 +347,8 @@ enum ScalarFuncSig {
 	IfString = 4110;
 	IfTime = 4111;
 	IfDuration = 4112;
+	IfNullJson = 4113;
+	IfJson = 4114;
 }
 
 // Evaluators should implement evaluation functions for every expression type.
