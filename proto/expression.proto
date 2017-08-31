@@ -349,6 +349,21 @@ enum ScalarFuncSig {
 	IfDuration = 4112;
 	IfNullJson = 4113;
 	IfJson = 4114;
+
+	/*
+	 * Here we use suffix *New* to avoid name conflict. After we removes
+	 * all same things in ExprType, we can rename them back.
+	 */
+	JsonExtractNew = 5001;
+	JsonUnquoteNew = 5002;
+	JsonTypeNew = 5003;
+	JsonSetNew = 5004;
+	JsonInsertNew = 5005;
+	JsonReplaceNew = 5006;
+	JsonRemoveNew = 5007;
+	JsonMergeNew = 5008;
+	JsonObjectNew = 5009;
+	JsonArrayNew = 5010;
 }
 
 // Evaluators should implement evaluation functions for every expression type.
