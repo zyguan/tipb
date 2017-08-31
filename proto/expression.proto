@@ -333,16 +333,17 @@ enum ScalarFuncSig {
 	StringIsNull = 3114;
 	TimeIsNull = 3115;
 	IntIsNull = 3116;
-	BitAndNew = 3117;
-	BitOrNew = 3118;
-	BitXorNew = 3119;
-	BitNegNew = 3120;
-	IntIsTrue = 3121;
-	RealIsTrue = 3122;
-	DecimalIsTrue = 3123;
-	IntIsFalse = 3124;
-	RealIsFalse = 3125;
-	DecimalIsFalse = 3126;
+	JsonIsNull = 3117;
+	BitAndSig = 3118;
+	BitOrSig = 3119;
+	BitXorSig = 3120;
+	BitNegSig = 3121;
+	IntIsTrue = 3122;
+	RealIsTrue = 3123;
+	DecimalIsTrue = 3124;
+	IntIsFalse = 3125;
+	RealIsFalse = 3126;
+	DecimalIsFalse = 3127;
     
 	IfNullInt = 4101;
 	IfNullReal = 4102;
@@ -375,7 +376,22 @@ enum ScalarFuncSig {
 	CaseWhenDuration = 4213;
 	CaseWhenJson = 4214;
 
-	LikeNew = 4310;
+	/*
+	 * Here we use suffix *Sig* to avoid name conflict. After we removes
+	 * all same things in ExprType, we can rename them back.
+	 */
+	LikeSig = 4310;
+
+	JsonExtractSig = 5001;
+	JsonUnquoteSig = 5002;
+	JsonTypeSig = 5003;
+	JsonSetSig = 5004;
+	JsonInsertSig = 5005;
+	JsonReplaceSig = 5006;
+	JsonRemoveSig = 5007;
+	JsonMergeSig = 5008;
+	JsonObjectSig = 5009;
+	JsonArraySig = 5010;
 }
 
 // Evaluators should implement evaluation functions for every expression type.
