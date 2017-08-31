@@ -302,6 +302,8 @@ enum ScalarFuncSig {
 	MultiplyReal = 208;
 	MultiplyDecimal = 209;
 	MultiplyInt = 210;
+	DivideReal = 211;
+	DivideDecimal = 212;
 
 	AbsInt = 2101;
 	AbsUInt = 2102;
@@ -322,9 +324,6 @@ enum ScalarFuncSig {
 	LogicalOr = 3102;
 	LogicalXor = 3103;
 	UnaryNot = 3104;
-	RealIsTrue = 3105;
-	DecimalIsTrue = 3106;
-	IntIsFalse = 3107;
 	UnaryMinusInt = 3108;
 	UnaryMinusReal = 3109;
 	UnaryMinusDecimal = 3110;
@@ -334,7 +333,17 @@ enum ScalarFuncSig {
 	StringIsNull = 3114;
 	TimeIsNull = 3115;
 	IntIsNull = 3116;
-
+	BitAndNew = 3117;
+	BitOrNew = 3118;
+	BitXorNew = 3119;
+	BitNegNew = 3120;
+	IntIsTrue = 3121;
+	RealIsTrue = 3122;
+	DecimalIsTrue = 3123;
+	IntIsFalse = 3124;
+	RealIsFalse = 3125;
+	DecimalIsFalse = 3126;
+    
 	IfNullInt = 4101;
 	IfNullReal = 4102;
 	IfNullDecimal = 4103;
@@ -349,6 +358,24 @@ enum ScalarFuncSig {
 	IfDuration = 4112;
 	IfNullJson = 4113;
 	IfJson = 4114;
+
+	CoalesceInt = 4201;
+	CoalesceReal = 4202;
+	CoalesceDecimal = 4203;
+	CoalesceString = 4204;
+	CoalesceTime = 4205;
+	CoalesceDuration = 4206;
+	CoalesceJson = 4207;
+
+	CaseWhenInt = 4208;
+	CaseWhenReal = 4209;
+	CaseWhenDecimal = 4210;
+	CaseWhenString = 4211;
+	CaseWhenTime = 4212;
+	CaseWhenDuration = 4213;
+	CaseWhenJson = 4214;
+
+	LikeNew = 4310;
 
 	/*
 	 * Here we use suffix *New* to avoid name conflict. After we removes
@@ -371,7 +398,7 @@ message Expr {
 	optional ExprType tp = 1 [(gogoproto.nullable) = false];
 	optional bytes val = 2;
 	repeated Expr children = 3;
-	optional ScalarFuncSig sig = 4;
+	optional ScalarFuncSig sig = 4 [(gogoproto.nullable) = false];
 	optional FieldType field_type = 5;
 }
 
