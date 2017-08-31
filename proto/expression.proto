@@ -334,17 +334,16 @@ enum ScalarFuncSig {
 	TimeIsNull = 3115;
 	IntIsNull = 3116;
 	JsonIsNull = 3117;
-	BitAndNew = 3118;
-	BitOrNew = 3119;
-	BitXorNew = 3120;
-	BitNegNew = 3121;
+	BitAndSig = 3118;
+	BitOrSig = 3119;
+	BitXorSig = 3120;
+	BitNegSig = 3121;
 	IntIsTrue = 3122;
 	RealIsTrue = 3123;
 	DecimalIsTrue = 3124;
 	IntIsFalse = 3125;
 	RealIsFalse = 3126;
 	DecimalIsFalse = 3127;
-	JsonIsFalse = 3128;
     
 	IfNullInt = 4101;
 	IfNullReal = 4102;
