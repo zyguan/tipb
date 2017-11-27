@@ -13,7 +13,6 @@ TiDB protobuf files
 + `go get -u github.com/gogo/protobuf/protoc-gen-gofast`
 + `cd $GOPATH/src/github.com/gogo/protobuf`
 + `git checkout v0.5`
-+ `cd $GOPATH/src`
 + `rm $GOPATH/bin/protoc-gen-gofast`
 + `go get github.com/gogo/protobuf/protoc-gen-gofast`
 
