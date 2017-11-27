@@ -24,6 +24,8 @@ import (
 
 	github_com_golang_protobuf_proto "github.com/golang/protobuf/proto"
 
+	encoding_binary "encoding/binary"
+
 	io "io"
 )
 
@@ -416,12 +418,14 @@ func (m *Scalar) MarshalTo(dAtA []byte) (int, error) {
 	if m.VDouble != nil {
 		dAtA[i] = 0x31
 		i++
-		i = encodeFixed64MysqlxDatatypes(dAtA, i, uint64(math.Float64bits(float64(*m.VDouble))))
+		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(*m.VDouble))))
+		i += 8
 	}
 	if m.VFloat != nil {
 		dAtA[i] = 0x3d
 		i++
-		i = encodeFixed32MysqlxDatatypes(dAtA, i, uint32(math.Float32bits(float32(*m.VFloat))))
+		encoding_binary.LittleEndian.PutUint32(dAtA[i:], uint32(math.Float32bits(float32(*m.VFloat))))
+		i += 4
 	}
 	if m.VBool != nil {
 		dAtA[i] = 0x40
@@ -682,24 +686,6 @@ func (m *Any) MarshalTo(dAtA []byte) (int, error) {
 	return i, nil
 }
 
-func encodeFixed64MysqlxDatatypes(dAtA []byte, offset int, v uint64) int {
-	dAtA[offset] = uint8(v)
-	dAtA[offset+1] = uint8(v >> 8)
-	dAtA[offset+2] = uint8(v >> 16)
-	dAtA[offset+3] = uint8(v >> 24)
-	dAtA[offset+4] = uint8(v >> 32)
-	dAtA[offset+5] = uint8(v >> 40)
-	dAtA[offset+6] = uint8(v >> 48)
-	dAtA[offset+7] = uint8(v >> 56)
-	return offset + 8
-}
-func encodeFixed32MysqlxDatatypes(dAtA []byte, offset int, v uint32) int {
-	dAtA[offset] = uint8(v)
-	dAtA[offset+1] = uint8(v >> 8)
-	dAtA[offset+2] = uint8(v >> 16)
-	dAtA[offset+3] = uint8(v >> 24)
-	return offset + 4
-}
 func encodeVarintMysqlxDatatypes(dAtA []byte, offset int, v uint64) int {
 	for v >= 1<<7 {
 		dAtA[offset] = uint8(v&0x7f | 0x80)
@@ -994,15 +980,8 @@ func (m *Scalar) Unmarshal(dAtA []byte) error {
 			if (iNdEx + 8) > l {
 				return io.ErrUnexpectedEOF
 			}
+			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
 			iNdEx += 8
-			v = uint64(dAtA[iNdEx-8])
-			v |= uint64(dAtA[iNdEx-7]) << 8
-			v |= uint64(dAtA[iNdEx-6]) << 16
-			v |= uint64(dAtA[iNdEx-5]) << 24
-			v |= uint64(dAtA[iNdEx-4]) << 32
-			v |= uint64(dAtA[iNdEx-3]) << 40
-			v |= uint64(dAtA[iNdEx-2]) << 48
-			v |= uint64(dAtA[iNdEx-1]) << 56
 			v2 := float64(math.Float64frombits(v))
 			m.VDouble = &v2
 		case 7:
@@ -1013,11 +992,8 @@ func (m *Scalar) Unmarshal(dAtA []byte) error {
 			if (iNdEx + 4) > l {
 				return io.ErrUnexpectedEOF
 			}
+			v = uint32(encoding_binary.LittleEndian.Uint32(dAtA[iNdEx:]))
 			iNdEx += 4
-			v = uint32(dAtA[iNdEx-4])
-			v |= uint32(dAtA[iNdEx-3]) << 8
-			v |= uint32(dAtA[iNdEx-2]) << 16
-			v |= uint32(dAtA[iNdEx-1]) << 24
 			v2 := float32(math.Float32frombits(v))
 			m.VFloat = &v2
 		case 8:
@@ -1886,7 +1862,7 @@ func init() {
 
 var fileDescriptorMysqlxDatatypes = []byte{
 	// 616 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0x84, 0x94, 0xcd, 0x6e, 0xd3, 0x4a,
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x94, 0xcd, 0x6e, 0xd3, 0x4a,
 	0x14, 0xc7, 0xef, 0xc4, 0x5f, 0xc9, 0x71, 0x6e, 0x65, 0x8d, 0x6e, 0x55, 0xdf, 0xa8, 0x04, 0x13,
 	0x55, 0xc2, 0x80, 0x70, 0x21, 0x42, 0x2c, 0x10, 0x1b, 0xa7, 0x1f, 0xa8, 0xc8, 0xd4, 0xd2, 0x38,
 	0xa9, 0xc4, 0xca, 0x72, 0x1c, 0xb7, 0x4a, 0x71, 0x3d, 0x25, 0x99, 0x8c, 0x9a, 0x97, 0x60, 0xcd,
