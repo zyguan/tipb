@@ -1,26 +1,38 @@
 # tipb
+
 TiDB protobuf files
 
-# Usage
+## Requirements
 
-### install protobuf compiler.
+### 1. Install [google/protobuf](https://github.com/google/protobuf)
 
-+ Can be downloaded at https://github.com/google/protobuf
+We use `protoc` 3.5.1, to download: [protobuf/releases/tag/v3.5.1](https://github.com/google/protobuf/releases/tag/v3.5.1)
 
-### Write your own protocol file in proto folder.
+### 2. Install [stepancheg/rust-protobuf](https://github.com/stepancheg/rust-protobuf)
 
-### Make sure the gogo protobuf and protoc-gen-gofast is installed and checked out to v0.5
+We use `protoc-gen-rust` 1.4.1, to install:
 
-+ `go get -u github.com/gogo/protobuf/protoc-gen-gofast`
-+ `cd $GOPATH/src/github.com/gogo/protobuf`
-+ `git checkout v0.5`
-+ `rm $GOPATH/bin/protoc-gen-gofast`
-+ `go get github.com/gogo/protobuf/protoc-gen-gofast`
+```sh
+cargo install --version 1.4.1 protobuf
+export PATH="$HOME/.cargo/bin:$PATH"
+```
 
-### Generate go and rust code.
+### 3. Install [gogo/protobuf](https://github.com/gogo/protobuf)
 
-We generate all go code in pkg folder and rust in src folder.
+We use `protoc-gen-gofast` v0.5, to install:
 
-+ `make`
+```sh
+go get -u github.com/gogo/protobuf/protoc-gen-gofast
+cd $GOPATH/src/github.com/gogo/protobuf
+git checkout v0.5
+rm $GOPATH/bin/protoc-gen-gofast
+go get github.com/gogo/protobuf/protoc-gen-gofast
+```
 
-### Update the dependent projects.
+## Generate the Go and Rust codes
+
+```sh
+make
+```
+
+NOTE: Do not forget to update the dependent projects!
