@@ -32,11 +32,14 @@ message SelectResponse {
 
 	// Use multiple chunks to reduce memory allocation and
 	// avoid allocating large contiguous memory.
-	repeated Chunk chunks		  = 3 [(gogoproto.nullable) = false];
-	repeated Error warnings		  = 4;
-	repeated int64 output_counts  = 5;
-	optional int64 warning_count  = 6;
+	repeated Chunk chunks = 3 [(gogoproto.nullable) = false];
+	repeated Error warnings = 4;
+	repeated int64 output_counts = 5;
+	optional int64 warning_count = 6;
 	optional bytes row_batch_data = 7 [(gogoproto.customtype) = "github.com/pingcap/tipb/sharedbytes.SharedBytes", (gogoproto.nullable) = false];
+
+	// The execution summary of each executor, in the order in request.
+	repeated ExecutorExecutionSummary execution_summaries = 8;
 }
 
 // Chunk contains multiple rows data and rows meta.
@@ -91,10 +94,16 @@ message DAGRequest {
 	optional uint64 sql_mode = 9;
 
 	// It indicates whether the sql mode is strict.
-	optional bool is_strict_sql_mode = 10;
+	// Deprecated. Don't use.
+	// optional bool is_strict_sql_mode = 10;
 
 	// supply offset is not enough since we have daylight saving time present in some regions
 	optional string time_zone_name = 11 [(gogoproto.nullable) = false];
+
+	// It represents whether or not TiKV should collect execution summaries.
+	// Execution summaries will be collected into `execution_summaries` field
+	// in the response.
+	optional bool collect_execution_summaries = 12;
 }
 
 enum EncodeType {
