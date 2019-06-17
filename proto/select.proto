@@ -104,6 +104,9 @@ message DAGRequest {
 	// Execution summaries will be collected into `execution_summaries` field
 	// in the response.
 	optional bool collect_execution_summaries = 12;
+
+	// Represents the maximum size of one packet, any generated string, or any parameter sent as long data.
+	optional uint64 max_allowed_packet = 13;
 }
 
 enum EncodeType {
