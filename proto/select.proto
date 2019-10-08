@@ -36,7 +36,8 @@ message SelectResponse {
 	repeated Error warnings = 4;
 	repeated int64 output_counts = 5;
 	optional int64 warning_count = 6;
-	optional bytes row_batch_data = 7 [(gogoproto.customtype) = "github.com/pingcap/tipb/sharedbytes.SharedBytes", (gogoproto.nullable) = false];
+	// It indicates the encode type of response.
+	optional EncodeType encode_type = 7 [(gogoproto.nullable) = false];
 
 	// The execution summary of each executor, in the order in request.
 	repeated ExecutorExecutionSummary execution_summaries = 8;
