@@ -108,11 +108,24 @@ message DAGRequest {
 
 	// Represents the maximum size of one packet, any generated string, or any parameter sent as long data.
 	optional uint64 max_allowed_packet = 13;
+
+	// Represents the chunk memory layout.
+	optional ChunkMemoryLayout chunk_memory_layout = 14;
 }
 
 enum EncodeType {
 	TypeDefault = 0;
 	TypeChunk = 1;
+}
+
+message ChunkMemoryLayout {
+	// Represents the endian.
+	optional Endian endian = 1 [(gogoproto.nullable) = false];
+}
+
+enum Endian {
+	LittleEndian = 0;
+	BigEndian = 1;
 }
 
 message StreamResponse {

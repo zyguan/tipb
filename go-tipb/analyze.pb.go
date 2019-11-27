@@ -50,6 +50,7 @@
 		Chunk
 		RowMeta
 		DAGRequest
+		ChunkMemoryLayout
 		StreamResponse
 */
 package tipb
