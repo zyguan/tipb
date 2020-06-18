@@ -21,6 +21,7 @@ enum ExecType {
 	TypeTopN = 4;
 	TypeLimit = 5;
 	TypeStreamAgg = 6;
+	TypeJoin = 7;
 }
 
 // It represents a Executor.
@@ -33,6 +34,14 @@ message Executor {
 	optional TopN topN = 6;
 	optional Limit limit = 7;
 	optional Aggregation stream_agg= 8;
+	optional Join join = 9;
+	optional string executor_id = 10;
+}
+
+enum EngineType {
+	Local = 0;
+	TiKV = 1;
+	TiFlash = 2;
 }
 
 message TableScan {
@@ -40,6 +49,30 @@ message TableScan {
 	repeated ColumnInfo columns = 2;
 	optional bool desc = 3 [(gogoproto.nullable) = false];
 	repeated int64 primary_column_ids = 4;
+	optional EngineType next_read_engine = 5 [(gogoproto.nullable) = false]; // which engine we should in next step, only used by tiflash
+	repeated KeyRange ranges = 6 [(gogoproto.nullable) = false]; // For global read in join, we must point out the key ranges when we don't have the region info.
+}
+
+enum JoinType {
+	TypeInnerJoin = 0;
+	TypeLeftOuterJoin = 1;
+	TypeRightOuterJoin = 2;
+}
+
+enum JoinExecType {
+	TypeHashJoin = 0;
+}
+
+message Join {
+	optional JoinType join_type = 1 [(gogoproto.nullable) = false];
+	optional JoinExecType join_exec_type = 2 [(gogoproto.nullable) = false];
+	repeated Executor children = 3;
+	optional int64 inner_idx = 4 [(gogoproto.nullable) = false]; // 0 or 1
+	repeated Expr left_join_keys = 5;
+	repeated Expr right_join_keys = 6;
+	// used by TiFlash join when new collation is enabled.
+	repeated FieldType probe_types = 7;
+	repeated FieldType build_types = 8;
 }
 
 message IndexScan {
@@ -55,12 +88,14 @@ message Selection {
 	// Where conditions.
 	repeated Expr conditions = 1;
 	repeated RpnExpr rpn_conditions = 2;
+	optional Executor child = 3;
 }
 
 message Projection {
 	// Projection expressions.
 	repeated Expr exprs = 1;
 	repeated RpnExpr rpn_exprs = 2;
+	optional Executor child = 3;
 }
 
 message Aggregation {
@@ -72,17 +107,20 @@ message Aggregation {
 	repeated RpnExpr rpn_agg_func = 5;
 	// If it is a stream aggregation.
 	optional bool streamed = 3 [(gogoproto.nullable) = false];
+	optional Executor child = 6;
 }
 
 message TopN {
 	// Order by clause.
 	repeated ByItem order_by = 1;
 	optional uint64 limit = 2 [(gogoproto.nullable) = false];
+	optional Executor child = 3;
 }
 
 message Limit {
 	// Limit the result to be returned.
 	optional uint64 limit = 1 [(gogoproto.nullable) = false];
+	optional Executor child = 2;
 }
 
 message ExecutorExecutionSummary {
@@ -94,4 +132,7 @@ message ExecutorExecutionSummary {
 
 	// How many times executor's `next()` is called.
 	optional uint64 num_iterations = 3;
+
+	// Coresponding executor id
+	optional string executor_id = 4;
 }
