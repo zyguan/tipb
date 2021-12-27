@@ -69,7 +69,8 @@
 		ChunkMemoryLayout
 		UserIdentity
 		StreamResponse
-		CPUTimeRecord
+		TopSQLRecord
+		TopSQLRecordItem
 		SQLMeta
 		PlanMeta
 		EmptyResponse
