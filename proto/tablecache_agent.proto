@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package tipb;
+
+option java_multiple_files = true;
+option java_package = "com.pingcap.tidb.tipb";
+
+import "gogoproto/gogo.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+
+service TableCacheAgent {
+    rpc Invalidate(InvalidateRequest) returns (InvalidateResponse) {}
+}
+
+message InvalidateRequest {
+    int64 table_id = 1;
+    uint64 min_read_lease = 2;
+}
+
+message InvalidateResponse {
+    uint64 max_read_ts = 1;
+}
