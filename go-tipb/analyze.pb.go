@@ -51,6 +51,7 @@
 		Limit
 		Kill
 		ExecutorExecutionSummary
+		TiFlashScanContext
 		Sort
 		WindowFrameBound
 		WindowFrame
